@@ -24,11 +24,11 @@ export function AttackGraphView({ initialNodes, initialEdges }: AttackGraphViewP
   const [edges, , onEdgesChange] = useEdgesState(initialEdges);
 
   return (
-    <div className="w-full h-[520px] bg-[#090E17] rounded-xl border border-[#1E2D48] overflow-hidden relative shadow-2xl">
-      <div className="absolute top-3 left-4 z-10 flex items-center gap-2 bg-[#0E1524]/90 backdrop-blur-md px-3.5 py-1.5 rounded-lg border border-[#1E2D48] shadow-lg">
-        <div className="w-2.5 h-2.5 rounded-full bg-[#E19AA6] animate-ping" />
-        <span className="text-xs font-mono text-[#FAF0EA]">
-          Entity Correlation Graph • <span className="text-[#82B0CE] font-bold">{nodes.length} Nodes</span> • <span className="text-[#E19AA6] font-bold">{edges.length} Edges</span>
+    <div className="w-full h-[520px] bg-[#0E0C0A] rounded-2xl border border-[#2E241D] overflow-hidden relative shadow-2xl">
+      <div className="absolute top-3 left-4 z-10 flex items-center gap-2 bg-[#15110E]/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-[#2E241D] shadow-lg">
+        <div className="w-2.5 h-2.5 rounded-full bg-[#EB9F6E] animate-ping" />
+        <span className="text-xs font-mono text-[#FFF6E5]">
+          Entity Correlation Graph • <span className="text-[#FFEABD] font-bold">{nodes.length} Nodes</span> • <span className="text-[#EB9F6E] font-bold">{edges.length} Edges</span>
         </span>
       </div>
 
@@ -40,15 +40,15 @@ export function AttackGraphView({ initialNodes, initialEdges }: AttackGraphViewP
         nodeTypes={nodeTypes}
         fitView
       >
-        <Background color="#1E2D48" gap={20} size={1} />
-        <Controls className="!bg-[#0E1524] !border-[#1E2D48] !fill-[#FAF0EA]" />
+        <Background color="#2E241D" gap={20} size={1} />
+        <Controls className="!bg-[#15110E] !border-[#2E241D] !fill-[#FFF6E5]" />
         <MiniMap
           nodeColor={(node: any) => {
-            if (node.data?.severity === "critical") return "#E19AA6";
-            if (node.data?.severity === "high") return "#F0B0BB";
-            return "#82B0CE";
+            if (node.data?.severity === "critical") return "#EB9F6E";
+            if (node.data?.severity === "high") return "#F2AF83";
+            return "#FFEABD";
           }}
-          className="!bg-[#0E1524] !border-[#1E2D48]"
+          className="!bg-[#15110E] !border-[#2E241D]"
         />
       </ReactFlow>
     </div>

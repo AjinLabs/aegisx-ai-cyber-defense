@@ -1,84 +1,111 @@
 @import "tailwindcss";
 
 :root {
-  /* AEGISX Curated Palette: Old Rose, Seashell, Sky Blue */
-  --rose: #E19AA6;
-  --rose-hover: #F0B0BB;
-  --rose-muted: #59353D;
-  --seashell: #FAF0EA;
-  --sky: #82B0CE;
-  --sky-hover: #9AC2DC;
-  --sky-muted: #244158;
+  /* AEGISX Curated Palette: Orange Dream & Sweet Lemon */
+  --orange-dream: #EB9F6E;
+  --orange-dream-hover: #F2AF83;
+  --orange-dream-deep: #D47E45;
+  --orange-dream-subtle: rgba(235, 159, 110, 0.15);
+  
+  --sweet-lemon: #FFEABD;
+  --sweet-lemon-hover: #FFF1CD;
+  --sweet-lemon-dark: #F5DC9A;
+  --sweet-lemon-subtle: rgba(255, 234, 189, 0.15);
 
-  /* Cyber Rose Dark Theme (Default) */
-  --background: #090E17;
-  --foreground: #FAF0EA;
-  --sidebar: #0E1524;
-  --card: #121C2F;
-  --card-border: #1E2D48;
-  --card-hover: #17243C;
-  --primary: #E19AA6;
-  --primary-hover: #F0B0BB;
+  /* Warm Espresso Obsidian Dark Theme (Default) */
+  --background: #0E0C0A;
+  --foreground: #FFF6E5;
+  --sidebar: #15110E;
+  --card: #1C1713;
+  --card-border: #2E241D;
+  --card-hover: #261F1A;
+  --primary: #EB9F6E;
+  --primary-hover: #F2AF83;
+  --secondary: #FFEABD;
   --success: #6AC99F;
   --warning: #F5B942;
-  --critical: #E19AA6;
-  --muted: #94A3B8;
+  --critical: #E8634F;
+  --muted: #A38F7E;
 }
 
+[data-theme="sweet-lemon"],
 [data-theme="seashell"] {
-  --background: #FAF0EA;
-  --foreground: #141C2B;
-  --sidebar: #F2E3DA;
+  /* Sweet Lemon & Orange Dream Editorial Light Mode */
+  --background: #FFFDF8;
+  --foreground: #241912;
+  --sidebar: #FFF3DB;
   --card: #FFFFFF;
-  --card-border: #E5D2C5;
-  --card-hover: #F8EFE9;
-  --primary: #D67786;
-  --primary-hover: #BF6271;
+  --card-border: #F3DECB;
+  --card-hover: #FFF7ED;
+  --primary: #EB9F6E;
+  --primary-hover: #D87D43;
+  --secondary: #FFEABD;
   --success: #2E9B68;
   --warning: #C28612;
-  --critical: #D65264;
-  --muted: #6B7B94;
+  --critical: #D94434;
+  --muted: #7E6857;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Custom Cyber Scrollbar */
+h1, h2, h3, .font-heading {
+  font-family: var(--font-outfit), var(--font-jakarta), sans-serif;
+}
+
+/* Custom Warm Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
   background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--card-border);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--rose);
+  background: var(--orange-dream);
 }
 
 /* Monospace cyber font helper */
 .font-mono-cyber {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* Glowing accents with the requested palette */
-.glow-rose {
-  box-shadow: 0 0 16px rgba(225, 154, 166, 0.35);
+/* Glowing accents with the Orange Dream & Sweet Lemon palette */
+.glow-orange {
+  box-shadow: 0 0 18px rgba(235, 159, 110, 0.35);
 }
-.glow-sky {
-  box-shadow: 0 0 16px rgba(130, 176, 206, 0.35);
+.glow-lemon {
+  box-shadow: 0 0 18px rgba(255, 234, 189, 0.45);
 }
-.glow-seashell {
-  box-shadow: 0 0 16px rgba(250, 240, 234, 0.2);
+.glow-warm {
+  box-shadow: 0 6px 20px -3px rgba(235, 159, 110, 0.22);
 }
 .glow-success {
-  box-shadow: 0 0 15px rgba(106, 201, 159, 0.3);
+  box-shadow: 0 0 16px rgba(106, 201, 159, 0.3);
+}
+
+/* Human-made / Craft details */
+.handcrafted-stamp {
+  position: relative;
+  border-radius: 9999px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.analyst-notebook-paper {
+  background-image: radial-gradient(rgba(235, 159, 110, 0.12) 1px, transparent 0);
+  background-size: 16px 16px;
 }

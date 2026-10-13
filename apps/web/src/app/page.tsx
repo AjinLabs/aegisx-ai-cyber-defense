@@ -40,7 +40,12 @@ import {
   ChevronDown,
   Send,
   Eye,
-  Crosshair
+  Crosshair,
+  Coffee,
+  FileCheck,
+  PenTool,
+  CheckCheck,
+  Fingerprint
 } from "lucide-react";
 import {
   AreaChart,
@@ -75,7 +80,41 @@ export default function AegisxDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
-  const [themeMode, setThemeMode] = useState<"dark" | "seashell">("dark");
+  const [themeMode, setThemeMode] = useState<"dark" | "sweet-lemon">("dark");
+  const [isAnalystDeskOpen, setIsAnalystDeskOpen] = useState(false);
+  const [activeOperator, setActiveOperator] = useState<"Ajin" | "Sarah" | "Marcus">("Ajin");
+  const [operatorNotes, setOperatorNotes] = useState<any[]>([
+    {
+      id: "note-1",
+      author: "Ajin K.",
+      role: "Lead Architect & SOC Commander",
+      time: "12 mins ago",
+      tag: "DUAL-CONTROL SIGNED",
+      content: "Validated APT29 credential spray telemetry. Model suggested immediate host isolation for 10.0.4.12. Confirmed anomalous SMB spray pattern; granted authorization while preserving memory artifacts for forensics.",
+      intuition: "High Malicious Confidence (98%)"
+    },
+    {
+      id: "note-2",
+      author: "Sarah Chen",
+      role: "Senior Incident Responder",
+      time: "38 mins ago",
+      tag: "THRESHOLD CALIBRATED",
+      content: "Calibrated Isolation Forest sensitivity threshold to 0.65. Marketing bulk ETL batch was triggering noisy false positives. Zero true anomalies missed.",
+      intuition: "False Positive Suppressed"
+    },
+    {
+      id: "note-3",
+      author: "Marcus Vance",
+      role: "Threat Hunter & Reverse Engineer",
+      time: "2 hours ago",
+      tag: "RAG KNOWLEDGE LINKED",
+      content: "Cross-referenced FIN7 C2 beacon payload with MITRE ATT&CK T1071.001. Playbook RAG-78 populated with custom YARA detection rule.",
+      intuition: "Grounded in Threat Intel"
+    }
+  ]);
+  const [newOperatorNoteText, setNewOperatorNoteText] = useState("");
+  const [newOperatorTag, setNewOperatorTag] = useState("VERIFIED GROUND TRUTH");
+  const [plainEnglishOpen, setPlainEnglishOpen] = useState<Record<string, boolean>>({});
 
   // Core Data States
   const [metrics, setMetrics] = useState<any>(null);
@@ -106,14 +145,33 @@ export default function AegisxDashboard() {
   const [newAnalystNote, setNewAnalystNote] = useState("");
   const [analystNoteAuthor, setAnalystNoteAuthor] = useState("Sarah Chen (SOC Lead)");
 
-  // Toggle Theme
+  // Toggle Theme: Sweet Lemon & Orange Dream
   useEffect(() => {
-    if (themeMode === "seashell") {
-      document.documentElement.setAttribute("data-theme", "seashell");
+    if (themeMode === "sweet-lemon" || (themeMode as string) === "seashell") {
+      document.documentElement.setAttribute("data-theme", "sweet-lemon");
     } else {
       document.documentElement.removeAttribute("data-theme");
     }
   }, [themeMode]);
+
+  const handleAddOperatorNote = () => {
+    if (!newOperatorNoteText.trim()) return;
+    const authorName = activeOperator === "Ajin" ? "Ajin K." : activeOperator === "Sarah" ? "Sarah Chen" : "Marcus Vance";
+    const authorRole = activeOperator === "Ajin" ? "Lead Architect & SOC Commander" : activeOperator === "Sarah" ? "Senior Incident Responder" : "Threat Hunter";
+    const newEntry = {
+      id: `note-${Date.now()}`,
+      author: authorName,
+      role: authorRole,
+      time: "Just now",
+      tag: newOperatorTag,
+      content: newOperatorNoteText.trim(),
+      intuition: "Analyst Heuristic Assessment"
+    };
+    setOperatorNotes([newEntry, ...operatorNotes]);
+    setNewOperatorNoteText("");
+    setNotification(`Analyst note recorded by ${authorName}! Linked to active shift handover log.`);
+    setTimeout(() => setNotification(null), 4000);
+  };
 
   // Initial Load
   const refreshAllData = async () => {
@@ -337,40 +395,46 @@ export default function AegisxDashboard() {
   };
 
   // Severity Colors Palette
-  const isSeashell = themeMode === "seashell";
+  const isSweetLemon = themeMode === "sweet-lemon" || (themeMode as string) === "seashell";
+  const isSeashell = isSweetLemon;
 
   return (
-    <div className={`flex h-screen w-screen overflow-hidden font-sans transition-colors duration-300 ${isSeashell ? "bg-[#FAF0EA] text-[#141C2B]" : "bg-[#090E17] text-[#FAF0EA]"}`}>
+    <div className={`flex h-screen w-screen overflow-hidden font-sans transition-colors duration-300 ${isSeashell ? "bg-[#FFFDF8] text-[#241912]" : "bg-[#0E0C0A] text-[#FFFDF8]"}`}>
       
       {/* 1. SIDEBAR NAVIGATION */}
-      <aside className={`w-64 border-r flex flex-col justify-between shrink-0 transition-colors duration-300 ${isSeashell ? "bg-[#F2E3DA] border-[#E5D2C5]" : "bg-[#0E1524] border-[#1E2D48]"}`}>
+      <aside className={`w-64 border-r flex flex-col justify-between shrink-0 transition-colors duration-300 ${isSeashell ? "bg-[#FFF3DB] border-[#F3DECB]" : "bg-[#15110E] border-[#2E241D]"}`}>
         <div>
           {/* Logo Brand with Palette Indicator */}
-          <div className={`p-4 border-b flex items-center justify-between ${isSeashell ? "border-[#E5D2C5]" : "border-[#1E2D48]"}`}>
+          <div className={`p-4 border-b flex items-center justify-between ${isSeashell ? "border-[#F3DECB]" : "border-[#2E241D]"}`}>
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#E19AA6]/20 border border-[#E19AA6] flex items-center justify-center glow-rose shadow-md">
-                <Shield className="w-5 h-5 text-[#E19AA6]" />
+              <div className="w-9 h-9 rounded-xl bg-[#EB9F6E]/20 border border-[#EB9F6E] flex items-center justify-center glow-orange shadow-md">
+                <Shield className="w-5 h-5 text-[#EB9F6E]" />
               </div>
               <div>
                 <div className="font-extrabold text-sm tracking-wider flex items-center gap-1.5">
-                  <span className={isSeashell ? "text-[#141C2B]" : "text-[#FAF0EA]"}>AEGIS</span>
-                  <span className="text-[#E19AA6]">X</span>
-                  <span className="text-[10px] bg-[#E19AA6] text-[#090E17] px-1.5 py-0.2 rounded font-mono font-bold">SOC</span>
+                  <span className={isSeashell ? "text-[#241912]" : "text-[#FFFDF8]"}>AEGIS</span>
+                  <span className="text-[#EB9F6E]">X</span>
+                  <span className="text-[10px] bg-[#EB9F6E] text-[#0E0C0A] px-1.5 py-0.2 rounded font-mono font-bold">SOC</span>
                 </div>
-                <div className={`text-[10px] font-mono tracking-tight ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                <div className={`text-[10px] font-mono tracking-tight ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                   Human-in-the-Loop Cyber AI
+                </div>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FFEABD] border border-[#EB9F6E]" title="Sweet Lemon (#FFEABD)"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#EB9F6E]" title="Orange Dream (#EB9F6E)"></span>
+                  <span className="text-[9px] font-mono font-bold text-[#EB9F6E]">Sweet Lemon & Orange Dream</span>
                 </div>
               </div>
             </div>
 
             {/* Theme Toggle Button */}
             <button
-              onClick={() => setThemeMode(themeMode === "dark" ? "seashell" : "dark")}
-              title={themeMode === "dark" ? "Switch to Seashell Executive Mode" : "Switch to Cyber Rose Dark Mode"}
+              onClick={() => setThemeMode(themeMode === "dark" ? "sweet-lemon" : "dark")}
+              title={themeMode === "dark" ? "Switch to Sweet Lemon Daylight Mode (#FFEABD)" : "Switch to Warm Espresso Obsidian Mode (#EB9F6E)"}
               className={`p-1.5 rounded-lg border transition-all ${
                 isSeashell
-                  ? "bg-[#FAF0EA] border-[#DEC8BC] text-[#D67786] hover:bg-white"
-                  : "bg-[#121C2F] border-[#1E2D48] text-[#E19AA6] hover:bg-[#17243C]"
+                  ? "bg-[#FFFDF8] border-[#F3DECB] text-[#EB9F6E] hover:bg-white"
+                  : "bg-[#1C1713] border-[#2E241D] text-[#EB9F6E] hover:bg-[#261F1A]"
               }`}
             >
               {isSeashell ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
@@ -380,18 +444,18 @@ export default function AegisxDashboard() {
           {/* Tenancy & Active Analyst Clearance */}
           <div className={`p-3 mx-2.5 my-2.5 rounded-xl border text-xs shadow-sm ${
             isSeashell
-              ? "bg-[#FAF0EA] border-[#E5D2C5]"
-              : "bg-[#121C2F] border-[#1E2D48]"
+              ? "bg-[#FFFDF8] border-[#F3DECB]"
+              : "bg-[#1C1713] border-[#2E241D]"
           }`}>
-            <div className={`text-[10px] uppercase font-mono tracking-wider mb-1 flex items-center justify-between ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+            <div className={`text-[10px] uppercase font-mono tracking-wider mb-1 flex items-center justify-between ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
               <span>Active Workspace</span>
-              <span className="text-[9px] px-1.5 py-0.2 rounded font-bold bg-[#E19AA6]/20 text-[#E19AA6]">HITL Active</span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded font-bold bg-[#EB9F6E]/20 text-[#EB9F6E]">HITL Active</span>
             </div>
             <div className="font-bold flex items-center justify-between">
-              <span className={isSeashell ? "text-[#141C2B]" : "text-[#FAF0EA]"}>Global Cyber Command</span>
+              <span className={isSeashell ? "text-[#241912]" : "text-[#FFFDF8]"}>Global Cyber Command</span>
               <span className="w-2 h-2 rounded-full bg-[#6AC99F] animate-pulse" />
             </div>
-            <div className={`text-[10px] font-mono mt-0.5 ${isSeashell ? "text-[#8E7A70]" : "text-slate-400"}`}>
+            <div className={`text-[10px] font-mono mt-0.5 ${isSeashell ? "text-[#968070]" : "text-slate-400"}`}>
               ws-prod • Level 4 Operator Clearance
             </div>
           </div>
@@ -419,25 +483,25 @@ export default function AegisxDashboard() {
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                     isActive
                       ? isSeashell
-                        ? "bg-[#D67786] text-white font-semibold shadow-md shadow-[#D67786]/25"
-                        : "bg-[#E19AA6] text-[#090E17] font-bold shadow-md shadow-[#E19AA6]/20"
+                        ? "bg-[#EB9F6E] text-white font-semibold shadow-md shadow-[#EB9F6E]/25"
+                        : "bg-[#EB9F6E] text-[#0E0C0A] font-bold shadow-md shadow-[#EB9F6E]/20"
                       : isSeashell
-                        ? "text-[#4B5A70] hover:text-[#141C2B] hover:bg-[#FAF0EA]"
-                        : "text-slate-400 hover:text-[#FAF0EA] hover:bg-[#121C2F]"
+                        ? "text-[#5E4A3E] hover:text-[#241912] hover:bg-[#FFFDF8]"
+                        : "text-slate-400 hover:text-[#FFFDF8] hover:bg-[#1C1713]"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <Icon className={`w-4 h-4 ${isActive ? (isSeashell ? "text-white" : "text-[#090E17]") : (isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]")}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? (isSeashell ? "text-white" : "text-[#0E0C0A]") : (isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]")}`} />
                     <span>{item.label}</span>
                   </div>
                   {item.badge && (
                     <span
                       className={`text-[9px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
                         isActive
-                          ? isSeashell ? "bg-white/30 text-white" : "bg-[#090E17]/25 text-[#090E17]"
+                          ? isSeashell ? "bg-white/30 text-white" : "bg-[#0E0C0A]/25 text-[#0E0C0A]"
                           : isSeashell
-                            ? "bg-[#D67786]/20 text-[#D67786] border border-[#D67786]/30"
-                            : "bg-[#E19AA6]/20 text-[#E19AA6] border border-[#E19AA6]/40"
+                            ? "bg-[#EB9F6E]/20 text-[#EB9F6E] border border-[#EB9F6E]/30"
+                            : "bg-[#EB9F6E]/20 text-[#EB9F6E] border border-[#EB9F6E]/40"
                       }`}
                     >
                       {item.badge}
@@ -450,25 +514,36 @@ export default function AegisxDashboard() {
         </div>
 
         {/* User Card with Human Analyst Identity */}
-        <div className={`p-3 border-t flex items-center gap-2.5 ${isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"}`}>
-          <div className="w-8 h-8 rounded-full bg-[#E19AA6]/20 border border-[#E19AA6]/50 flex items-center justify-center text-xs font-bold text-[#E19AA6]">
-            SC
+        <div className={`p-3 border-t flex items-center gap-2.5 ${isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"}`}>
+          <div className="w-8 h-8 rounded-full bg-[#EB9F6E]/20 border border-[#EB9F6E]/50 flex items-center justify-center text-xs font-bold text-[#EB9F6E]">
+            {activeOperator === "Ajin" ? "AK" : activeOperator === "Sarah" ? "SC" : "MV"}
           </div>
           <div className="flex-1 min-w-0">
-            <div className={`text-xs font-bold truncate ${isSeashell ? "text-[#141C2B]" : "text-[#FAF0EA]"}`}>Sarah Chen</div>
+            <div className={`text-xs font-bold truncate ${isSeashell ? "text-[#241912]" : "text-[#FFFDF8]"}`}>
+              {activeOperator === "Ajin" ? "Ajin K." : activeOperator === "Sarah" ? "Sarah Chen" : "Marcus Vance"}
+            </div>
             <div className="text-[10px] text-[#6AC99F] font-mono flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[#6AC99F] inline-block" />
-              SOC Lead • Shift Alpha
+              {activeOperator === "Ajin" ? "Lead Architect • Shift Alpha" : activeOperator === "Sarah" ? "SOC Lead • Shift Alpha" : "Forensics • Shift Alpha"}
             </div>
           </div>
+          <button
+            onClick={() => setActiveOperator(activeOperator === "Ajin" ? "Sarah" : activeOperator === "Sarah" ? "Marcus" : "Ajin")}
+            title="Switch Active Human Operator Profile"
+            className={`p-1.5 rounded-lg border transition text-[9px] font-mono font-bold ${
+              isSeashell ? "border-[#F3DECB] hover:bg-white text-[#5E4A3E]" : "border-[#2E241D] hover:bg-[#1C1713] text-slate-400 hover:text-white"
+            }`}
+          >
+            SWITCH
+          </button>
           <button
             onClick={refreshAllData}
             title="Refresh State"
             className={`p-1.5 rounded-lg border transition ${
-              isSeashell ? "border-[#E5D2C5] hover:bg-white text-[#4B5A70]" : "border-[#1E2D48] hover:bg-[#121C2F] text-slate-400 hover:text-white"
+              isSeashell ? "border-[#F3DECB] hover:bg-white text-[#5E4A3E]" : "border-[#2E241D] hover:bg-[#1C1713] text-slate-400 hover:text-white"
             }`}
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-[#E19AA6]" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-[#EB9F6E]" : ""}`} />
           </button>
         </div>
       </aside>
@@ -478,41 +553,50 @@ export default function AegisxDashboard() {
         
         {/* Top Operational Bar */}
         <header className={`h-14 border-b px-6 flex items-center justify-between shrink-0 transition-colors ${
-          isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#0E1524] border-[#1E2D48]"
+          isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#15110E] border-[#2E241D]"
         }`}>
           <div className="flex items-center gap-3">
-            <div className={`text-xs font-mono uppercase tracking-wider ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+            <div className={`text-xs font-mono uppercase tracking-wider ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
               Defense Status: <span className="text-[#6AC99F] font-bold">ACTIVE DEFENSE</span>
             </div>
-            <div className={`h-3 w-px ${isSeashell ? "bg-[#E5D2C5]" : "bg-[#1E2D48]"}`} />
-            <div className={`text-xs font-mono flex items-center gap-1.5 ${isSeashell ? "text-[#141C2B]" : "text-slate-300"}`}>
-              <span className="w-2 h-2 rounded-full bg-[#82B0CE] animate-pulse" />
+            <div className={`h-3 w-px ${isSeashell ? "bg-[#F3DECB]" : "bg-[#2E241D]"}`} />
+            <div className={`text-xs font-mono flex items-center gap-1.5 ${isSeashell ? "text-[#241912]" : "text-slate-300"}`}>
+              <span className="w-2 h-2 rounded-full bg-[#FFEABD] animate-pulse" />
               <span>Throughput: {metrics?.events_per_second || 14.8} EPS</span>
             </div>
-            <div className={`h-3 w-px ${isSeashell ? "bg-[#E5D2C5]" : "bg-[#1E2D48]"}`} />
-            <div className={`text-xs font-mono ${isSeashell ? "text-[#141C2B]" : "text-slate-300"}`}>
-              Analyst Agreement: <span className="text-[#E19AA6] font-bold">96.4% calibrated</span>
+            <div className={`h-3 w-px ${isSeashell ? "bg-[#F3DECB]" : "bg-[#2E241D]"}`} />
+            <div className={`text-xs font-mono ${isSeashell ? "text-[#241912]" : "text-slate-300"}`}>
+              Analyst Agreement: <span className="text-[#EB9F6E] font-bold">96.4% calibrated</span>
             </div>
           </div>
 
-          {/* Quick Scenario Injector & Actions */}
+          {/* Quick Actions & Human Shift Desk Button */}
           <div className="flex items-center gap-2">
-            <div className={`text-xs font-mono mr-1 hidden lg:inline ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
-              Inject Real Telemetry:
-            </div>
+            <button
+              onClick={() => setIsAnalystDeskOpen(true)}
+              className="px-3 py-1 text-xs rounded-xl bg-[#EB9F6E] text-[#0E0C0A] font-bold hover:bg-[#F2AF83] transition flex items-center gap-1.5 glow-orange shadow-sm"
+              title="Open Human Analyst Shift Desk & Handover Log"
+            >
+              <Coffee className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Analyst Shift Desk</span>
+              <span className="bg-[#0E0C0A] text-[#FFEABD] text-[10px] px-1.5 py-0.2 rounded-full font-mono">
+                {operatorNotes.length}
+              </span>
+            </button>
+            <div className={`h-3 w-px mx-1 ${isSeashell ? "bg-[#F3DECB]" : "bg-[#2E241D]"}`} />
             <button
               disabled={isSimulating}
               onClick={() => handleSimulateScenario("brute_force_lateral")}
-              className="px-2.5 py-1 text-xs rounded-lg bg-[#E19AA6]/15 border border-[#E19AA6]/40 text-[#E19AA6] hover:bg-[#E19AA6]/25 transition flex items-center gap-1 font-mono font-medium"
+              className="px-2.5 py-1 text-xs rounded-lg bg-[#EB9F6E]/15 border border-[#EB9F6E]/40 text-[#EB9F6E] hover:bg-[#EB9F6E]/25 transition flex items-center gap-1 font-mono font-medium"
             >
-              <Zap className="w-3 h-3 text-[#E19AA6]" /> APT29 Credential Spray
+              <Zap className="w-3 h-3 text-[#EB9F6E]" /> APT29 Spray
             </button>
             <button
               disabled={isSimulating}
               onClick={() => handleSimulateScenario("c2_exfiltration")}
-              className="px-2.5 py-1 text-xs rounded-lg bg-[#82B0CE]/15 border border-[#82B0CE]/40 text-[#82B0CE] hover:bg-[#82B0CE]/25 transition flex items-center gap-1 font-mono font-medium"
+              className="px-2.5 py-1 text-xs rounded-lg bg-[#FFEABD]/15 border border-[#FFEABD]/40 text-[#FFEABD] hover:bg-[#FFEABD]/25 transition flex items-center gap-1 font-mono font-medium"
             >
-              <Zap className="w-3 h-3 text-[#82B0CE]" /> FIN7 C2 Beacon
+              <Zap className="w-3 h-3 text-[#FFEABD]" /> FIN7 C2 Beacon
             </button>
             <button
               disabled={isSimulating}
@@ -527,13 +611,13 @@ export default function AegisxDashboard() {
         {/* Notification Toast */}
         {notification && (
           <div className={`border-b px-6 py-2.5 flex items-center justify-between text-xs animate-in fade-in ${
-            isSeashell ? "bg-[#F8EFE9] border-[#D67786] text-[#D67786]" : "bg-[#121C2F] border-[#E19AA6] text-[#E19AA6]"
+            isSeashell ? "bg-[#FFF7ED] border-[#EB9F6E] text-[#EB9F6E]" : "bg-[#1C1713] border-[#EB9F6E] text-[#EB9F6E]"
           }`}>
             <div className="flex items-center gap-2 font-mono">
-              <Sparkles className="w-4 h-4 text-[#E19AA6]" />
+              <Sparkles className="w-4 h-4 text-[#EB9F6E]" />
               <span>{notification}</span>
             </div>
-            <button onClick={() => setNotification(null)} className="text-slate-400 hover:text-[#FAF0EA]">
+            <button onClick={() => setNotification(null)} className="text-slate-400 hover:text-[#FFFDF8]">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -546,12 +630,62 @@ export default function AegisxDashboard() {
           {activeTab === "overview" && (
             <div className="space-y-6">
               
+              {/* Human SOC Shift Handover & Operational Briefing Card */}
+              <div className={`p-5 rounded-2xl border shadow-sm relative overflow-hidden ${
+                isSeashell ? "bg-[#FFF3DB] border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
+              }`}>
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-11 h-11 rounded-2xl bg-[#EB9F6E] text-[#0E0C0A] flex items-center justify-center font-bold text-lg shrink-0 shadow-md glow-orange">
+                      <Coffee className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full font-extrabold bg-[#EB9F6E] text-[#0E0C0A]">
+                          HUMAN SOC BRIEFING
+                        </span>
+                        <span className="text-xs font-mono text-[#6AC99F] font-bold">
+                          Shift Alpha • Lead Operator: {activeOperator === "Ajin" ? "Ajin K." : activeOperator === "Sarah" ? "Sarah Chen" : "Marcus Vance"}
+                        </span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-[#EB9F6E]/40 text-[#EB9F6E]">
+                          Orange Dream & Sweet Lemon Edition
+                        </span>
+                      </div>
+                      <h2 className="text-base font-extrabold tracking-tight">
+                        Autonomous Defense Active with 100% Human-in-the-Loop Oversight
+                      </h2>
+                      <p className={`text-xs mt-1 max-w-3xl leading-relaxed ${isSeashell ? "text-[#5E4A3E]" : "text-[#FFEABD]/90"}`}>
+                        "Shift handover active: 1 anomalous APT29 credential spray analyzed and contained with analyst ground truth. 7 specialized AI agents deployed; 2 response automations pending dual-operator sign-off."
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => setIsAnalystDeskOpen(true)}
+                      className="px-3.5 py-2 rounded-xl bg-[#EB9F6E] hover:bg-[#F2AF83] text-[#0E0C0A] font-extrabold text-xs flex items-center gap-1.5 transition glow-orange shadow-md"
+                    >
+                      <PenTool className="w-3.5 h-3.5" />
+                      Open Shift Desk ({operatorNotes.length})
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("response")}
+                      className={`px-3.5 py-2 rounded-xl border text-xs font-bold transition ${
+                        isSeashell ? "bg-white border-[#F3DECB] text-[#241912] hover:bg-[#FFF7ED]" : "bg-[#0E0C0A] border-[#2E241D] text-[#FFFDF8] hover:bg-[#261F1A]"
+                      }`}
+                    >
+                      Review Approvals ({approvals.filter(a => a.status === "pending").length})
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* Executive Metrics Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className={`p-4 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
-                  <div className={`flex items-center justify-between text-xs font-mono mb-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                <div className={`p-4 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
+                  <div className={`flex items-center justify-between text-xs font-mono mb-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                     <span>TOTAL TELEMETRY EVENTS</span>
-                    <Terminal className="w-4 h-4 text-[#82B0CE]" />
+                    <Terminal className="w-4 h-4 text-[#FFEABD]" />
                   </div>
                   <div className="text-2xl font-black font-mono tracking-tight">{metrics?.total_events || 0}</div>
                   <div className="text-[11px] text-[#6AC99F] font-mono mt-1 flex items-center gap-1">
@@ -559,34 +693,34 @@ export default function AegisxDashboard() {
                   </div>
                 </div>
 
-                <div className={`p-4 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
-                  <div className="flex items-center justify-between text-[#E19AA6] text-xs font-mono mb-1">
+                <div className={`p-4 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
+                  <div className="flex items-center justify-between text-[#EB9F6E] text-xs font-mono mb-1">
                     <span>ACTIVE INCIDENTS</span>
-                    <AlertOctagon className="w-4 h-4 text-[#E19AA6]" />
+                    <AlertOctagon className="w-4 h-4 text-[#EB9F6E]" />
                   </div>
-                  <div className="text-2xl font-black text-[#E19AA6] font-mono tracking-tight">
+                  <div className="text-2xl font-black text-[#EB9F6E] font-mono tracking-tight">
                     {metrics?.active_incidents || 0}
                   </div>
-                  <div className="text-[11px] text-[#E19AA6] font-mono mt-1">
+                  <div className="text-[11px] text-[#EB9F6E] font-mono mt-1">
                     {metrics?.critical_incidents || 0} Critical priority open
                   </div>
                 </div>
 
-                <div className={`p-4 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
-                  <div className={`flex items-center justify-between text-xs font-mono mb-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                <div className={`p-4 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
+                  <div className={`flex items-center justify-between text-xs font-mono mb-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                     <span>MODEL F1 SCORE (CALIBRATED)</span>
-                    <Cpu className="w-4 h-4 text-[#E19AA6]" />
+                    <Cpu className="w-4 h-4 text-[#EB9F6E]" />
                   </div>
                   <div className="text-2xl font-black font-mono tracking-tight">{metrics?.f1_score || 0.941}</div>
-                  <div className={`text-[11px] font-mono mt-1 ${isSeashell ? "text-[#6B7B94]" : "text-slate-400"}`}>
+                  <div className={`text-[11px] font-mono mt-1 ${isSeashell ? "text-[#7E6857]" : "text-slate-400"}`}>
                     Prec: {metrics?.precision || 0.965} • Rec: {metrics?.recall || 0.918}
                   </div>
                 </div>
 
-                <div className={`p-4 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
-                  <div className={`flex items-center justify-between text-xs font-mono mb-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                <div className={`p-4 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
+                  <div className={`flex items-center justify-between text-xs font-mono mb-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                     <span>MTTD / MTTR</span>
-                    <Clock className="w-4 h-4 text-[#82B0CE]" />
+                    <Clock className="w-4 h-4 text-[#FFEABD]" />
                   </div>
                   <div className="text-2xl font-black font-mono tracking-tight">
                     {metrics?.mttd_minutes || 1.4}m / {metrics?.mttr_minutes || 8.2}m
@@ -597,16 +731,16 @@ export default function AegisxDashboard() {
 
               {/* Visual Charts: Volume Timeline & Severity Breakdown */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className={`lg:col-span-2 p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+                <div className={`lg:col-span-2 p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-sm font-bold">Security Telemetry Velocity & Anomaly Cascade</h3>
-                      <p className={`text-xs ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                      <p className={`text-xs ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                         Raw events correlated against Scikit-Learn and PyTorch Autoencoder anomalies
                       </p>
                     </div>
                     <span className={`text-xs font-mono px-2.5 py-1 rounded-lg border ${
-                      isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5] text-[#141C2B]" : "bg-[#090E17] border-[#1E2D48] text-[#82B0CE]"
+                      isSeashell ? "bg-[#FFFDF8] border-[#F3DECB] text-[#241912]" : "bg-[#0E0C0A] border-[#2E241D] text-[#FFEABD]"
                     }`}>
                       24h Horizon
                     </span>
@@ -616,47 +750,47 @@ export default function AegisxDashboard() {
                       <AreaChart data={metrics?.hourly_event_volume || []}>
                         <defs>
                           <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#82B0CE" stopOpacity={0.4} />
-                            <stop offset="95%" stopColor="#82B0CE" stopOpacity={0.0} />
+                            <stop offset="5%" stopColor="#FFEABD" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#FFEABD" stopOpacity={0.0} />
                           </linearGradient>
                           <linearGradient id="colorAnomalies" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#E19AA6" stopOpacity={0.6} />
-                            <stop offset="95%" stopColor="#E19AA6" stopOpacity={0.0} />
+                            <stop offset="5%" stopColor="#EB9F6E" stopOpacity={0.6} />
+                            <stop offset="95%" stopColor="#EB9F6E" stopOpacity={0.0} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke={isSeashell ? "#E5D2C5" : "#1E2D48"} />
-                        <XAxis dataKey="time" stroke={isSeashell ? "#6B7B94" : "#82B0CE"} fontSize={11} />
-                        <YAxis stroke={isSeashell ? "#6B7B94" : "#82B0CE"} fontSize={11} />
+                        <CartesianGrid strokeDasharray="3 3" stroke={isSeashell ? "#F3DECB" : "#2E241D"} />
+                        <XAxis dataKey="time" stroke={isSeashell ? "#7E6857" : "#FFEABD"} fontSize={11} />
+                        <YAxis stroke={isSeashell ? "#7E6857" : "#FFEABD"} fontSize={11} />
                         <Tooltip contentStyle={{
-                          backgroundColor: isSeashell ? "#FAF0EA" : "#0E1524",
-                          borderColor: isSeashell ? "#E5D2C5" : "#1E2D48",
-                          color: isSeashell ? "#141C2B" : "#FAF0EA",
+                          backgroundColor: isSeashell ? "#FFFDF8" : "#15110E",
+                          borderColor: isSeashell ? "#F3DECB" : "#2E241D",
+                          color: isSeashell ? "#241912" : "#FFFDF8",
                           fontSize: "12px",
                           borderRadius: "8px"
                         }} />
-                        <Area type="monotone" dataKey="events" stroke="#82B0CE" strokeWidth={2.5} fillOpacity={1} fill="url(#colorEvents)" name="Total Events" />
-                        <Area type="monotone" dataKey="anomalies" stroke="#E19AA6" strokeWidth={2.5} fillOpacity={1} fill="url(#colorAnomalies)" name="Detected Anomalies" />
+                        <Area type="monotone" dataKey="events" stroke="#FFEABD" strokeWidth={2.5} fillOpacity={1} fill="url(#colorEvents)" name="Total Events" />
+                        <Area type="monotone" dataKey="anomalies" stroke="#EB9F6E" strokeWidth={2.5} fillOpacity={1} fill="url(#colorAnomalies)" name="Detected Anomalies" />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
 
                 {/* Alert Severity Distribution */}
-                <div className={`p-5 rounded-xl border flex flex-col justify-between shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+                <div className={`p-5 rounded-xl border flex flex-col justify-between shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                   <div>
                     <h3 className="text-sm font-bold mb-1">Alert Severity Distribution</h3>
-                    <p className={`text-xs mb-4 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                    <p className={`text-xs mb-4 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                       Grounded by Layer E detection fusion engine
                     </p>
                     <div className="space-y-3">
                       {[
-                        { label: "Critical", count: alerts.filter(a => a.severity === "critical").length || 3, color: "bg-[#E19AA6]", textColor: "text-[#E19AA6]" },
-                        { label: "High", count: alerts.filter(a => a.severity === "high").length || 4, color: "bg-[#F0B0BB]", textColor: "text-[#E19AA6]" },
-                        { label: "Medium", count: alerts.filter(a => a.severity === "medium").length || 2, color: "bg-[#82B0CE]", textColor: "text-[#82B0CE]" },
+                        { label: "Critical", count: alerts.filter(a => a.severity === "critical").length || 3, color: "bg-[#EB9F6E]", textColor: "text-[#EB9F6E]" },
+                        { label: "High", count: alerts.filter(a => a.severity === "high").length || 4, color: "bg-[#F2AF83]", textColor: "text-[#EB9F6E]" },
+                        { label: "Medium", count: alerts.filter(a => a.severity === "medium").length || 2, color: "bg-[#FFEABD]", textColor: "text-[#FFEABD]" },
                         { label: "Low", count: alerts.filter(a => a.severity === "low").length || 1, color: "bg-[#6AC99F]", textColor: "text-[#6AC99F]" }
                       ].map((s) => (
                         <div key={s.label} className={`p-2.5 rounded-lg border flex items-center justify-between ${
-                          isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"
+                          isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"
                         }`}>
                           <div className="flex items-center gap-2">
                             <span className={`w-2.5 h-2.5 rounded-full ${s.color}`} />
@@ -669,7 +803,7 @@ export default function AegisxDashboard() {
                   </div>
                   <button
                     onClick={() => setActiveTab("incidents")}
-                    className="w-full mt-4 py-2 bg-[#E19AA6]/15 hover:bg-[#E19AA6]/25 border border-[#E19AA6]/40 text-[#E19AA6] rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition"
+                    className="w-full mt-4 py-2 bg-[#EB9F6E]/15 hover:bg-[#EB9F6E]/25 border border-[#EB9F6E]/40 text-[#EB9F6E] rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition"
                   >
                     View Incident Investigation Queue <ChevronRight className="w-3.5 h-3.5" />
                   </button>
@@ -677,13 +811,13 @@ export default function AegisxDashboard() {
               </div>
 
               {/* Active High-Priority Incidents Feed */}
-              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <AlertOctagon className="w-4 h-4 text-[#E19AA6]" />
+                    <AlertOctagon className="w-4 h-4 text-[#EB9F6E]" />
                     <h3 className="text-sm font-bold">Active High-Priority Incidents & Active Investigations</h3>
                   </div>
-                  <span className={`text-xs font-mono ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                  <span className={`text-xs font-mono ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                     {incidents.length} active incidents tracked
                   </span>
                 </div>
@@ -692,20 +826,20 @@ export default function AegisxDashboard() {
                   {incidents.slice(0, 4).map((inc) => (
                     <div
                       key={inc.id}
-                      className={`p-4 rounded-xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-3 transition hover:border-[#E19AA6] ${
-                        isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"
+                      className={`p-4 rounded-xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-3 transition hover:border-[#EB9F6E] ${
+                        isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"
                       }`}
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase bg-[#E19AA6]/20 text-[#E19AA6] border border-[#E19AA6]/30">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase bg-[#EB9F6E]/20 text-[#EB9F6E] border border-[#EB9F6E]/30">
                             {inc.severity}
                           </span>
                           <span className="text-xs font-mono text-slate-400">{inc.id}</span>
-                          <span className="text-[11px] font-mono text-[#82B0CE]">• Risk Score: {inc.risk_score}</span>
+                          <span className="text-[11px] font-mono text-[#FFEABD]">• Risk Score: {inc.risk_score}</span>
                         </div>
                         <h4 className="text-xs font-bold truncate">{inc.title}</h4>
-                        <p className={`text-[11px] truncate ${isSeashell ? "text-[#6B7B94]" : "text-slate-300"}`}>{inc.summary}</p>
+                        <p className={`text-[11px] truncate ${isSeashell ? "text-[#7E6857]" : "text-slate-300"}`}>{inc.summary}</p>
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
@@ -714,7 +848,7 @@ export default function AegisxDashboard() {
                             loadIncidentDetails(inc.id);
                             setActiveTab("agents");
                           }}
-                          className="px-3 py-1.5 rounded-lg bg-[#E19AA6] hover:bg-[#F0B0BB] text-[#090E17] text-xs font-bold flex items-center gap-1.5 transition glow-rose"
+                          className="px-3 py-1.5 rounded-lg bg-[#EB9F6E] hover:bg-[#F2AF83] text-[#0E0C0A] text-xs font-bold flex items-center gap-1.5 transition glow-orange"
                         >
                           <Bot className="w-3.5 h-3.5" /> Launch AI Investigation
                         </button>
@@ -724,7 +858,7 @@ export default function AegisxDashboard() {
                             setActiveTab("incidents");
                           }}
                           className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${
-                            isSeashell ? "bg-white border-[#E5D2C5] text-[#141C2B] hover:bg-[#F8EFE9]" : "bg-[#121C2F] border-[#1E2D48] text-slate-300 hover:bg-[#17243C]"
+                            isSeashell ? "bg-white border-[#F3DECB] text-[#241912] hover:bg-[#FFF7ED]" : "bg-[#1C1713] border-[#2E241D] text-slate-300 hover:bg-[#261F1A]"
                           }`}
                         >
                           Investigate
@@ -741,10 +875,10 @@ export default function AegisxDashboard() {
           {activeTab === "telemetry" && (
             <div className="space-y-4">
               <div className={`p-4 rounded-xl border flex flex-wrap items-center justify-between gap-3 shadow-sm ${
-                isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"
+                isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
               }`}>
                 <div className="flex items-center gap-2 flex-1 min-w-[260px]">
-                  <Search className={`w-4 h-4 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`} />
+                  <Search className={`w-4 h-4 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`} />
                   <input
                     type="text"
                     placeholder="Search host, user, IP, action, process..."
@@ -752,8 +886,8 @@ export default function AegisxDashboard() {
                     onChange={(e) => setTelemetryFilter({ ...telemetryFilter, search: e.target.value })}
                     className={`rounded-lg px-3 py-1.5 text-xs w-full focus:outline-none border ${
                       isSeashell
-                        ? "bg-[#FAF0EA] border-[#E5D2C5] text-[#141C2B] placeholder-[#8E7A70] focus:border-[#D67786]"
-                        : "bg-[#090E17] border-[#1E2D48] text-[#FAF0EA] placeholder-slate-500 focus:border-[#E19AA6]"
+                        ? "bg-[#FFFDF8] border-[#F3DECB] text-[#241912] placeholder-[#968070] focus:border-[#EB9F6E]"
+                        : "bg-[#0E0C0A] border-[#2E241D] text-[#FFFDF8] placeholder-slate-500 focus:border-[#EB9F6E]"
                     }`}
                   />
                 </div>
@@ -763,7 +897,7 @@ export default function AegisxDashboard() {
                     value={telemetryFilter.category}
                     onChange={(e) => setTelemetryFilter({ ...telemetryFilter, category: e.target.value })}
                     className={`rounded-lg px-2.5 py-1.5 text-xs focus:outline-none border ${
-                      isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5] text-[#141C2B]" : "bg-[#090E17] border-[#1E2D48] text-slate-300"
+                      isSeashell ? "bg-[#FFFDF8] border-[#F3DECB] text-[#241912]" : "bg-[#0E0C0A] border-[#2E241D] text-slate-300"
                     }`}
                   >
                     <option value="">All Categories</option>
@@ -777,7 +911,7 @@ export default function AegisxDashboard() {
                     value={telemetryFilter.severity}
                     onChange={(e) => setTelemetryFilter({ ...telemetryFilter, severity: e.target.value })}
                     className={`rounded-lg px-2.5 py-1.5 text-xs focus:outline-none border ${
-                      isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5] text-[#141C2B]" : "bg-[#090E17] border-[#1E2D48] text-slate-300"
+                      isSeashell ? "bg-[#FFFDF8] border-[#F3DECB] text-[#241912]" : "bg-[#0E0C0A] border-[#2E241D] text-slate-300"
                     }`}
                   >
                     <option value="">All Severities</option>
@@ -791,10 +925,10 @@ export default function AegisxDashboard() {
                     onClick={() => setTelemetryFilter({ ...telemetryFilter, anomalyOnly: !telemetryFilter.anomalyOnly })}
                     className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-bold transition ${
                       telemetryFilter.anomalyOnly
-                        ? "bg-[#E19AA6]/20 border-[#E19AA6] text-[#E19AA6]"
+                        ? "bg-[#EB9F6E]/20 border-[#EB9F6E] text-[#EB9F6E]"
                         : isSeashell
-                          ? "bg-[#FAF0EA] border-[#E5D2C5] text-[#6B7B94]"
-                          : "bg-[#090E17] border-[#1E2D48] text-slate-400"
+                          ? "bg-[#FFFDF8] border-[#F3DECB] text-[#7E6857]"
+                          : "bg-[#0E0C0A] border-[#2E241D] text-slate-400"
                     }`}
                   >
                     {telemetryFilter.anomalyOnly ? "Anomalies Only" : "Show All Events"}
@@ -803,11 +937,11 @@ export default function AegisxDashboard() {
               </div>
 
               {/* Event Table with Explain Button & Human Verdict */}
-              <div className={`rounded-xl border overflow-hidden shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+              <div className={`rounded-xl border overflow-hidden shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead className={`font-mono uppercase text-[10px] border-b ${
-                      isSeashell ? "bg-[#F2E3DA] border-[#E5D2C5] text-[#6B7B94]" : "bg-[#0E1524] border-[#1E2D48] text-[#82B0CE]"
+                      isSeashell ? "bg-[#FFF3DB] border-[#F3DECB] text-[#7E6857]" : "bg-[#15110E] border-[#2E241D] text-[#FFEABD]"
                     }`}>
                       <tr>
                         <th className="p-3">Timestamp</th>
@@ -820,19 +954,19 @@ export default function AegisxDashboard() {
                         <th className="p-3 text-right">Human Verdict</th>
                       </tr>
                     </thead>
-                    <tbody className={`divide-y font-mono ${isSeashell ? "divide-[#E5D2C5]" : "divide-[#1E2D48]/60"}`}>
+                    <tbody className={`divide-y font-mono ${isSeashell ? "divide-[#F3DECB]" : "divide-[#2E241D]/60"}`}>
                       {filteredEvents.map((ev) => (
-                        <tr key={ev.id} className={`transition ${isSeashell ? "hover:bg-[#FAF0EA]" : "hover:bg-[#17243C]"}`}>
+                        <tr key={ev.id} className={`transition ${isSeashell ? "hover:bg-[#FFFDF8]" : "hover:bg-[#261F1A]"}`}>
                           <td className="p-3 text-slate-400 whitespace-nowrap">
                             {ev.timestamp ? ev.timestamp.replace("T", " ").slice(0, 19) : "2026-10-13 14:00:00"}
                           </td>
                           <td className="p-3">
                             <div className="font-bold">{ev.action}</div>
-                            <div className="text-[10px] text-[#82B0CE] capitalize">{ev.category} • {ev.outcome}</div>
+                            <div className="text-[10px] text-[#FFEABD] capitalize">{ev.category} • {ev.outcome}</div>
                           </td>
                           <td className="p-3">
                             <div>{ev.host_id || "—"}</div>
-                            <div className="text-[10px] text-[#E19AA6]">{ev.user_id || "—"}</div>
+                            <div className="text-[10px] text-[#EB9F6E]">{ev.user_id || "—"}</div>
                           </td>
                           <td className="p-3">
                             {ev.src_ip ? (
@@ -846,7 +980,7 @@ export default function AegisxDashboard() {
                           <td className="p-3">{ev.process_name || "—"}</td>
                           <td className="p-3 text-center">
                             {ev.is_anomaly ? (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E19AA6]/20 text-[#E19AA6] border border-[#E19AA6]/40">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#EB9F6E]/20 text-[#EB9F6E] border border-[#EB9F6E]/40">
                                 ANOMALY ({ev.anomaly_score?.toFixed(2) || "0.85"})
                               </span>
                             ) : (
@@ -858,7 +992,7 @@ export default function AegisxDashboard() {
                           <td className="p-3 text-center">
                             <button
                               onClick={() => handleExplainDecision(ev)}
-                              className="px-2 py-1 rounded bg-[#82B0CE]/15 hover:bg-[#82B0CE]/25 border border-[#82B0CE]/40 text-[#82B0CE] text-[10px] font-bold inline-flex items-center gap-1 transition"
+                              className="px-2 py-1 rounded bg-[#FFEABD]/15 hover:bg-[#FFEABD]/25 border border-[#FFEABD]/40 text-[#FFEABD] text-[10px] font-bold inline-flex items-center gap-1 transition"
                             >
                               <Crosshair className="w-3 h-3" /> Explain XAI
                             </button>
@@ -868,14 +1002,14 @@ export default function AegisxDashboard() {
                               <button
                                 onClick={() => handleHumanFeedback("event", ev.id, "confirmed_threat")}
                                 title="Confirm Threat (True Positive)"
-                                className="p-1 rounded bg-[#E19AA6]/20 hover:bg-[#E19AA6]/30 text-[#E19AA6] border border-[#E19AA6]/40 transition"
+                                className="p-1 rounded bg-[#EB9F6E]/20 hover:bg-[#EB9F6E]/30 text-[#EB9F6E] border border-[#EB9F6E]/40 transition"
                               >
                                 <Check className="w-3 h-3" />
                               </button>
                               <button
                                 onClick={() => handleHumanFeedback("event", ev.id, "false_positive")}
                                 title="Mark False Positive"
-                                className="p-1 rounded bg-[#82B0CE]/20 hover:bg-[#82B0CE]/30 text-[#82B0CE] border border-[#82B0CE]/40 transition"
+                                className="p-1 rounded bg-[#FFEABD]/20 hover:bg-[#FFEABD]/30 text-[#FFEABD] border border-[#FFEABD]/40 transition"
                               >
                                 <X className="w-3 h-3" />
                               </button>
@@ -893,11 +1027,11 @@ export default function AegisxDashboard() {
           {/* TAB 3: DETECTION & ANOMALY LAB */}
           {activeTab === "detection" && (
             <div className="space-y-6">
-              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                 <h3 className="text-base font-bold flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-[#E19AA6]" /> 5-Layer Autonomous Detection & Fusion Engine
+                  <Layers className="w-5 h-5 text-[#EB9F6E]" /> 5-Layer Autonomous Detection & Fusion Engine
                 </h3>
-                <p className={`text-xs mt-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                <p className={`text-xs mt-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                   Deterministic Rules → Statistical Baselines → Scikit-Learn Anomaly Classifier → PyTorch Deep Autoencoder → Layer E Fusion Risk Engine.
                 </p>
               </div>
@@ -905,16 +1039,16 @@ export default function AegisxDashboard() {
               {/* Detection Layers Breakdown Cards */}
               <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                 {[
-                  { layer: "Layer A", title: "Deterministic Rules", tech: "Regex & IOC Signatures", status: "Active (4 Rules)", color: "border-[#E19AA6]" },
-                  { layer: "Layer B", title: "Statistical Baseline", tech: "Z-Score Frequency Delta", status: "Monitoring 24h", color: "border-[#82B0CE]" },
-                  { layer: "Layer C", title: "Scikit-Learn ML", tech: "Isolation Forest + RF", status: "F1: 0.941", color: "border-[#E19AA6]" },
-                  { layer: "Layer D", title: "Deep Autoencoder", tech: "PyTorch 8-dim Bottleneck", status: "Loss: 0.042", color: "border-[#82B0CE]" },
+                  { layer: "Layer A", title: "Deterministic Rules", tech: "Regex & IOC Signatures", status: "Active (4 Rules)", color: "border-[#EB9F6E]" },
+                  { layer: "Layer B", title: "Statistical Baseline", tech: "Z-Score Frequency Delta", status: "Monitoring 24h", color: "border-[#FFEABD]" },
+                  { layer: "Layer C", title: "Scikit-Learn ML", tech: "Isolation Forest + RF", status: "F1: 0.941", color: "border-[#EB9F6E]" },
+                  { layer: "Layer D", title: "Deep Autoencoder", tech: "PyTorch 8-dim Bottleneck", status: "Loss: 0.042", color: "border-[#FFEABD]" },
                   { layer: "Layer E", title: "Detection Fusion", tech: "Human Risk Calibration", status: "Calibrated 96.4%", color: "border-[#6AC99F]" }
                 ].map((l) => (
-                  <div key={l.layer} className={`p-4 rounded-xl border-2 shadow-sm ${l.color} ${isSeashell ? "bg-white" : "bg-[#121C2F]"}`}>
-                    <div className="text-[10px] font-mono font-bold text-[#E19AA6]">{l.layer}</div>
+                  <div key={l.layer} className={`p-4 rounded-xl border-2 shadow-sm ${l.color} ${isSeashell ? "bg-white" : "bg-[#1C1713]"}`}>
+                    <div className="text-[10px] font-mono font-bold text-[#EB9F6E]">{l.layer}</div>
                     <div className="text-xs font-bold mt-0.5">{l.title}</div>
-                    <div className={`text-[11px] font-mono mt-1 ${isSeashell ? "text-[#6B7B94]" : "text-slate-400"}`}>{l.tech}</div>
+                    <div className={`text-[11px] font-mono mt-1 ${isSeashell ? "text-[#7E6857]" : "text-slate-400"}`}>{l.tech}</div>
                     <div className="mt-3 text-[10px] font-mono font-bold text-[#6AC99F] bg-[#6AC99F]/10 px-2 py-0.5 rounded border border-[#6AC99F]/30 inline-block">
                       {l.status}
                     </div>
@@ -923,7 +1057,7 @@ export default function AegisxDashboard() {
               </div>
 
               {/* Active Rules List */}
-              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                 <h4 className="text-sm font-bold mb-3">Configured Deterministic Detection Rules</h4>
                 <div className="space-y-2.5">
                   {[
@@ -933,17 +1067,17 @@ export default function AegisxDashboard() {
                     { id: "rule-exfil-004", name: "Abnormal Data Egress over Non-Standard Port", mitre: "T1048", severity: "high", desc: "Port: 4444, 1337, 8080 with >50MB egress traffic" }
                   ].map((r) => (
                     <div key={r.id} className={`p-3 rounded-lg border flex items-center justify-between ${
-                      isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"
+                      isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"
                     }`}>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase bg-[#E19AA6]/20 text-[#E19AA6] border border-[#E19AA6]/30">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase bg-[#EB9F6E]/20 text-[#EB9F6E] border border-[#EB9F6E]/30">
                             {r.severity}
                           </span>
                           <span className="text-xs font-bold">{r.name}</span>
-                          <span className="text-[10px] font-mono text-[#82B0CE]">• MITRE {r.mitre}</span>
+                          <span className="text-[10px] font-mono text-[#FFEABD]">• MITRE {r.mitre}</span>
                         </div>
-                        <p className={`text-[11px] ${isSeashell ? "text-[#6B7B94]" : "text-slate-400"}`}>{r.desc}</p>
+                        <p className={`text-[11px] ${isSeashell ? "text-[#7E6857]" : "text-slate-400"}`}>{r.desc}</p>
                       </div>
                       <span className="text-xs font-mono font-bold text-[#6AC99F]">ENABLED</span>
                     </div>
@@ -961,7 +1095,7 @@ export default function AegisxDashboard() {
               <div className="space-y-3">
                 <h3 className="text-sm font-bold flex items-center justify-between">
                   <span>Incident Queue</span>
-                  <span className={`text-xs font-mono ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                  <span className={`text-xs font-mono ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                     {incidents.length} active
                   </span>
                 </h3>
@@ -972,37 +1106,37 @@ export default function AegisxDashboard() {
                     onClick={() => loadIncidentDetails(inc.id)}
                     className={`p-3.5 rounded-xl border cursor-pointer transition ${
                       selectedIncident?.incident?.id === inc.id
-                        ? "border-[#E19AA6] bg-[#E19AA6]/10 shadow-md"
+                        ? "border-[#EB9F6E] bg-[#EB9F6E]/10 shadow-md"
                         : isSeashell
-                          ? "bg-white border-[#E5D2C5] hover:border-[#D67786]"
-                          : "bg-[#121C2F] border-[#1E2D48] hover:border-slate-500"
+                          ? "bg-white border-[#F3DECB] hover:border-[#EB9F6E]"
+                          : "bg-[#1C1713] border-[#2E241D] hover:border-slate-500"
                     }`}
                   >
                     <div className="flex items-center justify-between text-[10px] font-mono mb-1">
-                      <span className="text-[#E19AA6] uppercase font-bold">{inc.severity}</span>
+                      <span className="text-[#EB9F6E] uppercase font-bold">{inc.severity}</span>
                       <span className="text-slate-400">{inc.status}</span>
                     </div>
                     <div className="text-xs font-bold">{inc.title}</div>
-                    <div className={`text-[11px] truncate mt-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>{inc.summary}</div>
+                    <div className={`text-[11px] truncate mt-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>{inc.summary}</div>
                   </div>
                 ))}
               </div>
 
               {/* Incident Investigation Workspace with Case Notes */}
               <div className={`lg:col-span-2 p-5 rounded-xl border space-y-5 shadow-sm ${
-                isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"
+                isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
               }`}>
                 {selectedIncident ? (
                   <>
                     <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4 ${
-                      isSeashell ? "border-[#E5D2C5]" : "border-[#1E2D48]"
+                      isSeashell ? "border-[#F3DECB]" : "border-[#2E241D]"
                     }`}>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase bg-[#E19AA6]/20 text-[#E19AA6] border border-[#E19AA6]/30">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase bg-[#EB9F6E]/20 text-[#EB9F6E] border border-[#EB9F6E]/30">
                             {selectedIncident.incident.severity}
                           </span>
-                          <span className="text-xs font-mono text-[#82B0CE]">{selectedIncident.incident.id}</span>
+                          <span className="text-xs font-mono text-[#FFEABD]">{selectedIncident.incident.id}</span>
                           <span className="text-xs font-mono text-slate-400">• Status: {selectedIncident.incident.status}</span>
                         </div>
                         <h2 className="text-base font-bold">{selectedIncident.incident.title}</h2>
@@ -1011,7 +1145,7 @@ export default function AegisxDashboard() {
                       <button
                         disabled={isInvestigating}
                         onClick={() => handleTriggerInvestigation(selectedIncident.incident.id)}
-                        className="px-4 py-2 rounded-xl bg-[#E19AA6] hover:bg-[#F0B0BB] text-[#090E17] text-xs font-bold flex items-center gap-2 transition glow-rose shrink-0"
+                        className="px-4 py-2 rounded-xl bg-[#EB9F6E] hover:bg-[#F2AF83] text-[#0E0C0A] text-xs font-bold flex items-center gap-2 transition glow-orange shrink-0"
                       >
                         <Bot className="w-4 h-4" />
                         {isInvestigating ? "Executing Multi-Agent Pipeline..." : "Execute Agent Investigation"}
@@ -1020,11 +1154,11 @@ export default function AegisxDashboard() {
 
                     {/* Summary */}
                     <div>
-                      <h4 className={`text-xs font-mono uppercase mb-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                      <h4 className={`text-xs font-mono uppercase mb-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                         Incident Summary & Risk Assessment
                       </h4>
                       <p className={`text-xs p-3 rounded-xl border leading-relaxed ${
-                        isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"
+                        isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"
                       }`}>
                         {selectedIncident.incident.summary}
                       </p>
@@ -1034,7 +1168,7 @@ export default function AegisxDashboard() {
                     <div className="border-t pt-4">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <MessageSquare className="w-4 h-4 text-[#E19AA6]" />
+                          <MessageSquare className="w-4 h-4 text-[#EB9F6E]" />
                           <h4 className="text-xs font-bold uppercase font-mono tracking-wider">
                             Analyst Case Notes & Human Collaboration Journal
                           </h4>
@@ -1046,10 +1180,10 @@ export default function AegisxDashboard() {
                       <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1 mb-3">
                         {selectedIncident.analyst_notes?.map((n: any) => (
                           <div key={n.id} className={`p-3 rounded-xl border text-xs ${
-                            isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"
+                            isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"
                           }`}>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="font-bold text-[#E19AA6]">{n.analyst_name}</span>
+                              <span className="font-bold text-[#EB9F6E]">{n.analyst_name}</span>
                               <span className="text-[10px] font-mono text-slate-400">{n.created_at?.slice(0, 19)}</span>
                             </div>
                             <p className="leading-relaxed text-slate-300">{n.note}</p>
@@ -1067,13 +1201,13 @@ export default function AegisxDashboard() {
                           onKeyDown={(e) => e.key === "Enter" && handleAddIncidentNote()}
                           className={`flex-1 rounded-xl px-3 py-2 text-xs border focus:outline-none ${
                             isSeashell
-                              ? "bg-[#FAF0EA] border-[#E5D2C5] text-[#141C2B] focus:border-[#D67786]"
-                              : "bg-[#090E17] border-[#1E2D48] text-[#FAF0EA] focus:border-[#E19AA6]"
+                              ? "bg-[#FFFDF8] border-[#F3DECB] text-[#241912] focus:border-[#EB9F6E]"
+                              : "bg-[#0E0C0A] border-[#2E241D] text-[#FFFDF8] focus:border-[#EB9F6E]"
                           }`}
                         />
                         <button
                           onClick={handleAddIncidentNote}
-                          className="px-3.5 py-2 bg-[#82B0CE] hover:bg-[#9AC2DC] text-[#090E17] font-bold text-xs rounded-xl flex items-center gap-1.5 transition"
+                          className="px-3.5 py-2 bg-[#FFEABD] hover:bg-[#F2AF83] text-[#0E0C0A] font-bold text-xs rounded-xl flex items-center gap-1.5 transition"
                         >
                           <Send className="w-3.5 h-3.5" /> Post Note
                         </button>
@@ -1082,17 +1216,17 @@ export default function AegisxDashboard() {
 
                     {/* Timeline */}
                     <div>
-                      <h4 className={`text-xs font-mono uppercase mb-2 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                      <h4 className={`text-xs font-mono uppercase mb-2 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                         Chronological Incident Timeline
                       </h4>
                       <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                         {selectedIncident.timeline?.map((t: any) => (
                           <div key={t.id} className={`p-2.5 rounded-lg border text-xs flex items-start gap-2.5 ${
-                            isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"
+                            isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"
                           }`}>
-                            <Clock className="w-3.5 h-3.5 text-[#82B0CE] shrink-0 mt-0.5" />
+                            <Clock className="w-3.5 h-3.5 text-[#FFEABD] shrink-0 mt-0.5" />
                             <div>
-                              <div className="text-[10px] font-mono text-[#E19AA6]">
+                              <div className="text-[10px] font-mono text-[#EB9F6E]">
                                 {t.actor} • {t.timestamp?.replace("T", " ").slice(0, 19)}
                               </div>
                               <div className="mt-0.5">{t.description}</div>
@@ -1113,14 +1247,14 @@ export default function AegisxDashboard() {
           {activeTab === "agents" && (
             <div className="space-y-6">
               <div className={`p-5 rounded-xl border flex items-center justify-between shadow-sm ${
-                isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"
+                isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
               }`}>
                 <div>
                   <h3 className="text-base font-bold flex items-center gap-2">
-                    <Bot className="w-5 h-5 text-[#E19AA6]" />
+                    <Bot className="w-5 h-5 text-[#EB9F6E]" />
                     Autonomous Multi-Agent Investigation Centre
                   </h3>
-                  <p className={`text-xs mt-0.5 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                  <p className={`text-xs mt-0.5 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                     Coordinated 7 specialized cyber defense agents operating through deterministic safety rails and evidence grounding.
                   </p>
                 </div>
@@ -1129,7 +1263,7 @@ export default function AegisxDashboard() {
                   <button
                     disabled={isInvestigating}
                     onClick={() => handleTriggerInvestigation(selectedIncident.incident.id)}
-                    className="px-4 py-2 bg-[#E19AA6] hover:bg-[#F0B0BB] text-[#090E17] text-xs font-bold rounded-xl flex items-center gap-2 transition glow-rose"
+                    className="px-4 py-2 bg-[#EB9F6E] hover:bg-[#F2AF83] text-[#0E0C0A] text-xs font-bold rounded-xl flex items-center gap-2 transition glow-orange"
                   >
                     <Play className="w-3.5 h-3.5" />
                     {isInvestigating ? "Executing Multi-Agent System..." : "Re-Run Investigation"}
@@ -1142,16 +1276,16 @@ export default function AegisxDashboard() {
                 {selectedIncident?.agent_runs && selectedIncident.agent_runs.length > 0 ? (
                   selectedIncident.agent_runs.map((r: any, idx: number) => (
                     <div key={r.id || idx} className={`p-4 rounded-xl border shadow-sm ${
-                      isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"
+                      isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
                     }`}>
-                      <div className={`flex items-center justify-between border-b pb-3 mb-3 ${isSeashell ? "border-[#E5D2C5]" : "border-[#1E2D48]/60"}`}>
+                      <div className={`flex items-center justify-between border-b pb-3 mb-3 ${isSeashell ? "border-[#F3DECB]" : "border-[#2E241D]/60"}`}>
                         <div className="flex items-center gap-3">
-                          <div className="w-7 h-7 rounded-lg bg-[#E19AA6]/20 text-[#E19AA6] flex items-center justify-center font-mono font-bold text-xs border border-[#E19AA6]/40">
+                          <div className="w-7 h-7 rounded-lg bg-[#EB9F6E]/20 text-[#EB9F6E] flex items-center justify-center font-mono font-bold text-xs border border-[#EB9F6E]/40">
                             {idx + 1}
                           </div>
                           <div>
                             <h4 className="text-sm font-bold">{r.agent_name}</h4>
-                            <div className={`text-[10px] font-mono ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                            <div className={`text-[10px] font-mono ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                               Model: {r.model_used} • Duration: {r.duration_ms}ms • Tokens: {r.tokens_used}
                             </div>
                           </div>
@@ -1164,15 +1298,15 @@ export default function AegisxDashboard() {
                       {/* Tool Calls Log */}
                       {r.tool_calls_json && (
                         <div className="mb-3">
-                          <div className={`text-[10px] font-mono uppercase mb-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                          <div className={`text-[10px] font-mono uppercase mb-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                             Bounded Tool Invocations:
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {(Array.isArray(r.tool_calls_json) ? r.tool_calls_json : [r.tool_calls_json]).map((t: any, tidx: number) => (
                               <span key={tidx} className={`text-[10px] font-mono px-2 py-1 rounded-lg border flex items-center gap-1 ${
-                                isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5] text-[#141C2B]" : "bg-[#090E17] border-[#1E2D48] text-[#82B0CE]"
+                                isSeashell ? "bg-[#FFFDF8] border-[#F3DECB] text-[#241912]" : "bg-[#0E0C0A] border-[#2E241D] text-[#FFEABD]"
                               }`}>
-                                <Terminal className="w-3 h-3 text-[#E19AA6]" /> {t.tool || "tool_call"}
+                                <Terminal className="w-3 h-3 text-[#EB9F6E]" /> {t.tool || "tool_call"}
                               </span>
                             ))}
                           </div>
@@ -1181,9 +1315,9 @@ export default function AegisxDashboard() {
 
                       {/* Findings */}
                       <div className={`p-3 rounded-lg border ${
-                        isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"
+                        isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"
                       }`}>
-                        <div className={`text-[10px] font-mono uppercase mb-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                        <div className={`text-[10px] font-mono uppercase mb-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                           Synthesized Findings:
                         </div>
                         <pre className="text-xs font-mono-cyber whitespace-pre-wrap leading-relaxed">
@@ -1196,7 +1330,7 @@ export default function AegisxDashboard() {
                   ))
                 ) : (
                   <div className={`p-12 text-center rounded-xl text-xs border ${
-                    isSeashell ? "bg-white border-[#E5D2C5] text-[#6B7B94]" : "bg-[#121C2F] border-[#1E2D48] text-slate-400"
+                    isSeashell ? "bg-white border-[#F3DECB] text-[#7E6857]" : "bg-[#1C1713] border-[#2E241D] text-slate-400"
                   }`}>
                     No agent runs recorded yet for this incident. Click "Launch AI Investigation" above!
                   </div>
@@ -1220,12 +1354,12 @@ export default function AegisxDashboard() {
               </div>
 
               {/* Threat Indicators Table */}
-              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                 <h4 className="text-sm font-bold mb-3">Threat Intelligence Indicators of Compromise (IOC)</h4>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs font-mono">
                     <thead className={`text-[10px] uppercase border-b ${
-                      isSeashell ? "bg-[#F2E3DA] border-[#E5D2C5] text-[#6B7B94]" : "bg-[#0E1524] border-[#1E2D48] text-[#82B0CE]"
+                      isSeashell ? "bg-[#FFF3DB] border-[#F3DECB] text-[#7E6857]" : "bg-[#15110E] border-[#2E241D] text-[#FFEABD]"
                     }`}>
                       <tr>
                         <th className="p-2.5">Indicator Value</th>
@@ -1236,11 +1370,11 @@ export default function AegisxDashboard() {
                         <th className="p-2.5">Feed Source</th>
                       </tr>
                     </thead>
-                    <tbody className={`divide-y ${isSeashell ? "divide-[#E5D2C5]" : "divide-[#1E2D48]/60"}`}>
+                    <tbody className={`divide-y ${isSeashell ? "divide-[#F3DECB]" : "divide-[#2E241D]/60"}`}>
                       {threatIndicators.map((ioc) => (
-                        <tr key={ioc.id} className={`transition ${isSeashell ? "hover:bg-[#FAF0EA]" : "hover:bg-[#17243C]"}`}>
-                          <td className="p-2.5 text-[#E19AA6] font-bold">{ioc.value}</td>
-                          <td className="p-2.5 text-[#82B0CE] uppercase">{ioc.indicator_type}</td>
+                        <tr key={ioc.id} className={`transition ${isSeashell ? "hover:bg-[#FFFDF8]" : "hover:bg-[#261F1A]"}`}>
+                          <td className="p-2.5 text-[#EB9F6E] font-bold">{ioc.value}</td>
+                          <td className="p-2.5 text-[#FFEABD] uppercase">{ioc.indicator_type}</td>
                           <td className="p-2.5">
                             <span className="font-bold">{ioc.threat_actor}</span>
                             <div className="text-[10px] text-slate-400">{ioc.campaign}</div>
@@ -1262,11 +1396,11 @@ export default function AegisxDashboard() {
           {/* TAB 7: KNOWLEDGE & RAG STUDIO */}
           {activeTab === "rag" && (
             <div className="space-y-6">
-              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                 <h3 className="text-base font-bold mb-1 flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-[#E19AA6]" /> Knowledge & RAG Studio
+                  <BookOpen className="w-4 h-4 text-[#EB9F6E]" /> Knowledge & RAG Studio
                 </h3>
-                <p className={`text-xs mb-4 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                <p className={`text-xs mb-4 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                   Query indexed NIST/MITRE cybersecurity playbooks, internal runbooks, and SOPs with hybrid vector & keyword retrieval.
                 </p>
 
@@ -1277,14 +1411,14 @@ export default function AegisxDashboard() {
                     onChange={(e) => setRagQuery(e.target.value)}
                     className={`flex-1 rounded-xl px-3.5 py-2 text-xs border focus:outline-none ${
                       isSeashell
-                        ? "bg-[#FAF0EA] border-[#E5D2C5] text-[#141C2B] focus:border-[#D67786]"
-                        : "bg-[#090E17] border-[#1E2D48] text-[#FAF0EA] focus:border-[#E19AA6]"
+                        ? "bg-[#FFFDF8] border-[#F3DECB] text-[#241912] focus:border-[#EB9F6E]"
+                        : "bg-[#0E0C0A] border-[#2E241D] text-[#FFFDF8] focus:border-[#EB9F6E]"
                     }`}
                     placeholder="Enter security inquiry..."
                   />
                   <button
                     onClick={handleRagSearch}
-                    className="px-4 py-2 bg-[#E19AA6] hover:bg-[#F0B0BB] text-[#090E17] text-xs font-bold rounded-xl flex items-center gap-1.5 transition glow-rose"
+                    className="px-4 py-2 bg-[#EB9F6E] hover:bg-[#F2AF83] text-[#0E0C0A] text-xs font-bold rounded-xl flex items-center gap-1.5 transition glow-orange"
                   >
                     <Search className="w-3.5 h-3.5" /> Execute Hybrid RAG Query
                   </button>
@@ -1293,29 +1427,29 @@ export default function AegisxDashboard() {
 
               {/* Citations Results */}
               {ragResults && (
-                <div className={`p-5 rounded-xl border space-y-4 shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+                <div className={`p-5 rounded-xl border space-y-4 shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                   {ragResults.synthesized_guidance && (
-                    <div className="p-3 bg-[#E19AA6]/10 border border-[#E19AA6]/40 rounded-xl text-xs text-[#E19AA6]">
+                    <div className="p-3 bg-[#EB9F6E]/10 border border-[#EB9F6E]/40 rounded-xl text-xs text-[#EB9F6E]">
                       <span className="font-bold">Synthesized Guidance: </span>
                       {ragResults.synthesized_guidance}
                     </div>
                   )}
 
-                  <h4 className={`text-xs font-mono uppercase ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                  <h4 className={`text-xs font-mono uppercase ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                     Verified Source Citations Grounded in Telemetry
                   </h4>
                   <div className="space-y-3">
                     {ragResults.citations?.map((c: any, idx: number) => (
-                      <div key={idx} className={`p-4 rounded-xl border ${isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"}`}>
+                      <div key={idx} className={`p-4 rounded-xl border ${isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"}`}>
                         <div className="flex items-center justify-between mb-1.5">
                           <span className="text-xs font-bold">{c.document_title}</span>
                           <span className="text-[10px] font-mono bg-[#6AC99F]/20 text-[#6AC99F] px-2 py-0.5 rounded border border-[#6AC99F]/30">
                             Similarity: {(c.similarity_score * 100).toFixed(1)}%
                           </span>
                         </div>
-                        <div className="text-[11px] font-mono text-[#82B0CE] mb-2">Section: {c.section_title || "General"}</div>
+                        <div className="text-[11px] font-mono text-[#FFEABD] mb-2">Section: {c.section_title || "General"}</div>
                         <p className={`text-xs p-3 rounded-lg border leading-relaxed ${
-                          isSeashell ? "bg-white border-[#E5D2C5] text-[#141C2B]" : "bg-[#0A0F1D] border-[#1E2D48]/60 text-slate-300"
+                          isSeashell ? "bg-white border-[#F3DECB] text-[#241912]" : "bg-[#0A0F1D] border-[#2E241D]/60 text-slate-300"
                         }`}>
                           "{c.content}"
                         </p>
@@ -1333,14 +1467,14 @@ export default function AegisxDashboard() {
               
               {/* Header with Human Active Learning Callout */}
               <div className={`p-5 rounded-xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm ${
-                isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"
+                isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
               }`}>
                 <div>
                   <div className="flex items-center gap-2">
-                    <Cpu className="w-5 h-5 text-[#E19AA6]" />
+                    <Cpu className="w-5 h-5 text-[#EB9F6E]" />
                     <h3 className="text-base font-bold">ML / DL Model Registry & Human-in-the-Loop Active Learning</h3>
                   </div>
-                  <p className={`text-xs mt-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                  <p className={`text-xs mt-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                     Continuous model retraining informed by verified SOC analyst ground truth annotations.
                   </p>
                 </div>
@@ -1349,14 +1483,14 @@ export default function AegisxDashboard() {
                   <button
                     disabled={isFineTuning}
                     onClick={handleFineTuneHuman}
-                    className="px-3.5 py-2 bg-[#E19AA6] hover:bg-[#F0B0BB] text-[#090E17] font-bold text-xs rounded-xl flex items-center gap-1.5 transition glow-rose shadow-md"
+                    className="px-3.5 py-2 bg-[#EB9F6E] hover:bg-[#F2AF83] text-[#0E0C0A] font-bold text-xs rounded-xl flex items-center gap-1.5 transition glow-orange shadow-md"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     {isFineTuning ? "Calibrating..." : "Calibrate with Human Annotations"}
                   </button>
                   <button
                     onClick={handleRetrainAutoencoder}
-                    className="px-3.5 py-2 bg-[#82B0CE] hover:bg-[#9AC2DC] text-[#090E17] font-bold text-xs rounded-xl flex items-center gap-1.5 transition shadow-md"
+                    className="px-3.5 py-2 bg-[#FFEABD] hover:bg-[#F2AF83] text-[#0E0C0A] font-bold text-xs rounded-xl flex items-center gap-1.5 transition shadow-md"
                   >
                     <RefreshCw className="w-3.5 h-3.5" /> Retrain Autoencoder (PyTorch)
                   </button>
@@ -1367,7 +1501,7 @@ export default function AegisxDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {modelsData?.models?.map((m: any) => (
                   <div key={m.id} className={`p-4 rounded-xl border flex flex-col justify-between shadow-sm ${
-                    isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"
+                    isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
                   }`}>
                     <div>
                       <div className="flex items-center justify-between text-[10px] font-mono mb-2">
@@ -1375,14 +1509,14 @@ export default function AegisxDashboard() {
                         <span className="text-slate-400">{m.framework}</span>
                       </div>
                       <h4 className="text-sm font-bold mb-1">{m.name}</h4>
-                      <div className="text-[11px] text-[#E19AA6] font-mono mb-3">{m.version}</div>
+                      <div className="text-[11px] text-[#EB9F6E] font-mono mb-3">{m.version}</div>
 
                       <div className={`p-3 rounded-xl border text-xs font-mono space-y-1 ${
-                        isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"
+                        isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"
                       }`}>
                         {Object.entries(m.metrics || {}).map(([k, v]) => (
                           <div key={k} className="flex justify-between">
-                            <span className={isSeashell ? "text-[#6B7B94]" : "text-slate-400"}>{k}:</span>
+                            <span className={isSeashell ? "text-[#7E6857]" : "text-slate-400"}>{k}:</span>
                             <span className="font-bold">{typeof v === "number" ? v.toFixed(3) : String(v)}</span>
                           </div>
                         ))}
@@ -1390,9 +1524,9 @@ export default function AegisxDashboard() {
                     </div>
 
                     <div className={`mt-4 pt-2 border-t flex items-center justify-between text-xs font-mono ${
-                      isSeashell ? "border-[#E5D2C5]" : "border-[#1E2D48]"
+                      isSeashell ? "border-[#F3DECB]" : "border-[#2E241D]"
                     }`}>
-                      <span className={isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}>Drift Score:</span>
+                      <span className={isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}>Drift Score:</span>
                       <span className="text-[#6AC99F] font-bold">{m.drift_score} ({m.drift_status})</span>
                     </div>
                   </div>
@@ -1401,19 +1535,19 @@ export default function AegisxDashboard() {
 
               {/* Human-in-the-Loop Sensitivity & Analyst Fatigue Simulator */}
               <div className={`p-5 rounded-xl border space-y-4 shadow-sm ${
-                isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"
+                isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
               }`}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <SlidersHorizontal className="w-4 h-4 text-[#E19AA6]" />
+                      <SlidersHorizontal className="w-4 h-4 text-[#EB9F6E]" />
                       <h4 className="text-sm font-bold">Analyst Fatigue vs. Anomaly Sensitivity Tuning</h4>
                     </div>
-                    <p className={`text-xs mt-0.5 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                    <p className={`text-xs mt-0.5 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                       Human-crafted threshold slider: adjust operational sensitivity to prevent SOC analyst cognitive overload.
                     </p>
                   </div>
-                  <div className="text-xs font-mono font-bold text-[#E19AA6]">
+                  <div className="text-xs font-mono font-bold text-[#EB9F6E]">
                     Selected Threshold: {selectedThreshold.toFixed(2)}
                   </div>
                 </div>
@@ -1431,31 +1565,31 @@ export default function AegisxDashboard() {
                     step="0.10"
                     value={selectedThreshold}
                     onChange={(e) => setSelectedThreshold(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-[#82B0CE]/30 rounded-lg appearance-none cursor-pointer accent-[#E19AA6]"
+                    className="w-full h-2 bg-[#FFEABD]/30 rounded-lg appearance-none cursor-pointer accent-[#EB9F6E]"
                   />
                 </div>
 
                 {/* Simulated Metrics for Selected Threshold */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-                  <div className={`p-3 rounded-xl border ${isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"}`}>
+                  <div className={`p-3 rounded-xl border ${isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"}`}>
                     <div className="text-[10px] font-mono text-slate-400">EST. ALERTS / SHIFT</div>
-                    <div className="text-lg font-black font-mono mt-1 text-[#E19AA6]">
+                    <div className="text-lg font-black font-mono mt-1 text-[#EB9F6E]">
                       {currentSensitivity.alerts_per_shift} alerts
                     </div>
                   </div>
-                  <div className={`p-3 rounded-xl border ${isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"}`}>
+                  <div className={`p-3 rounded-xl border ${isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"}`}>
                     <div className="text-[10px] font-mono text-slate-400">FALSE POSITIVE BURDEN</div>
-                    <div className="text-lg font-black font-mono mt-1 text-[#82B0CE]">
+                    <div className="text-lg font-black font-mono mt-1 text-[#FFEABD]">
                       {currentSensitivity.false_positive_pct}%
                     </div>
                   </div>
-                  <div className={`p-3 rounded-xl border ${isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"}`}>
+                  <div className={`p-3 rounded-xl border ${isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"}`}>
                     <div className="text-[10px] font-mono text-slate-400">THREAT RECALL</div>
                     <div className="text-lg font-black font-mono mt-1 text-[#6AC99F]">
                       {currentSensitivity.threat_recall_pct}%
                     </div>
                   </div>
-                  <div className={`p-3 rounded-xl border ${isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"}`}>
+                  <div className={`p-3 rounded-xl border ${isSeashell ? "bg-[#FFFDF8] border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"}`}>
                     <div className="text-[10px] font-mono text-slate-400">COGNITIVE FATIGUE INDEX</div>
                     <div className="text-xs font-bold font-mono mt-1" style={{ color: currentSensitivity.fatigue_color }}>
                       {currentSensitivity.analyst_fatigue_status}
@@ -1465,7 +1599,7 @@ export default function AegisxDashboard() {
               </div>
 
               {/* Human Feedback Annotation History */}
-              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                 <h4 className="text-sm font-bold mb-3 flex items-center justify-between">
                   <span>Recent Human Ground Truth Annotations (Active Learning Pool)</span>
                   <span className="text-xs font-mono text-[#6AC99F]">{humanFeedbackList.length} verified samples</span>
@@ -1473,7 +1607,7 @@ export default function AegisxDashboard() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs font-mono">
                     <thead className={`text-[10px] uppercase border-b ${
-                      isSeashell ? "bg-[#F2E3DA] border-[#E5D2C5] text-[#6B7B94]" : "bg-[#0E1524] border-[#1E2D48] text-[#82B0CE]"
+                      isSeashell ? "bg-[#FFF3DB] border-[#F3DECB] text-[#7E6857]" : "bg-[#15110E] border-[#2E241D] text-[#FFEABD]"
                     }`}>
                       <tr>
                         <th className="p-2.5">Target ID</th>
@@ -1483,15 +1617,15 @@ export default function AegisxDashboard() {
                         <th className="p-2.5">Analyst Critique & Rationale</th>
                       </tr>
                     </thead>
-                    <tbody className={`divide-y ${isSeashell ? "divide-[#E5D2C5]" : "divide-[#1E2D48]/60"}`}>
+                    <tbody className={`divide-y ${isSeashell ? "divide-[#F3DECB]" : "divide-[#2E241D]/60"}`}>
                       {humanFeedbackList.map((fb) => (
-                        <tr key={fb.id} className={`transition ${isSeashell ? "hover:bg-[#FAF0EA]" : "hover:bg-[#17243C]"}`}>
-                          <td className="p-2.5 text-[#82B0CE] font-bold">{fb.target_id}</td>
+                        <tr key={fb.id} className={`transition ${isSeashell ? "hover:bg-[#FFFDF8]" : "hover:bg-[#261F1A]"}`}>
+                          <td className="p-2.5 text-[#FFEABD] font-bold">{fb.target_id}</td>
                           <td className="p-2.5">
                             <span className={`px-2 py-0.5 rounded-full font-bold uppercase text-[10px] ${
                               fb.verdict === "confirmed_threat"
-                                ? "bg-[#E19AA6]/20 text-[#E19AA6] border border-[#E19AA6]/40"
-                                : "bg-[#82B0CE]/20 text-[#82B0CE] border border-[#82B0CE]/40"
+                                ? "bg-[#EB9F6E]/20 text-[#EB9F6E] border border-[#EB9F6E]/40"
+                                : "bg-[#FFEABD]/20 text-[#FFEABD] border border-[#FFEABD]/40"
                             }`}>
                               {fb.verdict.replace(/_/g, " ")}
                             </span>
@@ -1511,47 +1645,47 @@ export default function AegisxDashboard() {
           {/* TAB 9: RESPONSE & APPROVAL QUEUE */}
           {activeTab === "response" && (
             <div className="space-y-6">
-              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                 <h3 className="text-base font-bold flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-[#E19AA6]" /> Controlled Defensive Response & Dual-Control Queue
+                  <Lock className="w-4 h-4 text-[#EB9F6E]" /> Controlled Defensive Response & Dual-Control Queue
                 </h3>
-                <p className={`text-xs mt-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                <p className={`text-xs mt-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                   Dual-Control authorization: high-impact containment (endpoint network quarantine, account session revocation, edge ACL injection) requires explicit Incident Commander approval before sandbox execution.
                 </p>
               </div>
 
               {/* Pending Approvals */}
               <div className="space-y-3">
-                <h4 className={`text-xs font-mono uppercase ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                <h4 className={`text-xs font-mono uppercase ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                   Pending Human Sign-Offs
                 </h4>
                 {approvals.filter(a => a.status === "pending").map((appr) => (
-                  <div key={appr.id} className={`p-4 rounded-xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-[#E19AA6] ${
-                    isSeashell ? "bg-white" : "bg-[#121C2F]"
+                  <div key={appr.id} className={`p-4 rounded-xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-[#EB9F6E] ${
+                    isSeashell ? "bg-white" : "bg-[#1C1713]"
                   }`}>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase bg-[#E19AA6]/20 text-[#E19AA6] border border-[#E19AA6]/40">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase bg-[#EB9F6E]/20 text-[#EB9F6E] border border-[#EB9F6E]/40">
                           AWAITING AUTHORIZATION
                         </span>
-                        <span className="text-xs font-mono text-[#82B0CE]">{appr.id}</span>
+                        <span className="text-xs font-mono text-[#FFEABD]">{appr.id}</span>
                         <span className="text-xs text-slate-400">• Requested by: {appr.requester_agent}</span>
                       </div>
                       <h4 className="text-sm font-bold">Action: {appr.action_type.replace(/_/g, " ").toUpperCase()}</h4>
-                      <p className="text-xs mt-1">Target Entity: <span className="font-mono text-[#E19AA6] font-bold">{appr.target_entity}</span></p>
-                      <p className={`text-xs mt-1 ${isSeashell ? "text-[#6B7B94]" : "text-slate-300"}`}>Rationale: {appr.reasoning}</p>
+                      <p className="text-xs mt-1">Target Entity: <span className="font-mono text-[#EB9F6E] font-bold">{appr.target_entity}</span></p>
+                      <p className={`text-xs mt-1 ${isSeashell ? "text-[#7E6857]" : "text-slate-300"}`}>Rationale: {appr.reasoning}</p>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => handleDecideApproval(appr.id, "approved")}
-                        className="px-4 py-2 bg-[#6AC99F] hover:bg-[#7edba9] text-[#090E17] font-bold text-xs rounded-xl flex items-center gap-1.5 transition glow-success"
+                        className="px-4 py-2 bg-[#6AC99F] hover:bg-[#7edba9] text-[#0E0C0A] font-bold text-xs rounded-xl flex items-center gap-1.5 transition glow-success"
                       >
                         <Check className="w-3.5 h-3.5" /> Approve & Execute (Sandbox)
                       </button>
                       <button
                         onClick={() => handleDecideApproval(appr.id, "rejected")}
-                        className="px-3.5 py-2 bg-[#E19AA6]/20 hover:bg-[#E19AA6]/30 border border-[#E19AA6]/40 text-[#E19AA6] text-xs font-bold rounded-xl transition"
+                        className="px-3.5 py-2 bg-[#EB9F6E]/20 hover:bg-[#EB9F6E]/30 border border-[#EB9F6E]/40 text-[#EB9F6E] text-xs font-bold rounded-xl transition"
                       >
                         Reject
                       </button>
@@ -1561,7 +1695,7 @@ export default function AegisxDashboard() {
 
                 {approvals.filter(a => a.status === "pending").length === 0 && (
                   <div className={`p-8 text-center text-xs rounded-xl border ${
-                    isSeashell ? "bg-white border-[#E5D2C5] text-[#6B7B94]" : "bg-[#121C2F] border-[#1E2D48] text-slate-400"
+                    isSeashell ? "bg-white border-[#F3DECB] text-[#7E6857]" : "bg-[#1C1713] border-[#2E241D] text-slate-400"
                   }`}>
                     No pending approval requests. Trigger an autonomous investigation to evaluate defensive containment.
                   </div>
@@ -1573,20 +1707,20 @@ export default function AegisxDashboard() {
           {/* TAB 10: OBSERVABILITY & AUDIT */}
           {activeTab === "observability" && (
             <div className="space-y-6">
-              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+              <div className={`p-5 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                 <h3 className="text-base font-bold flex items-center gap-2">
-                  <Sliders className="w-4 h-4 text-[#82B0CE]" /> System Observability & Immutable Audit Logs
+                  <Sliders className="w-4 h-4 text-[#FFEABD]" /> System Observability & Immutable Audit Logs
                 </h3>
-                <p className={`text-xs mt-1 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+                <p className={`text-xs mt-1 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                   Traceable immutable logs of all automated detection events, agent tool calls, and operator approvals.
                 </p>
               </div>
 
-              <div className={`p-4 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"}`}>
+              <div className={`p-4 rounded-xl border shadow-sm ${isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"}`}>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs font-mono">
                     <thead className={`text-[10px] uppercase border-b ${
-                      isSeashell ? "bg-[#F2E3DA] border-[#E5D2C5] text-[#6B7B94]" : "bg-[#0E1524] border-[#1E2D48] text-[#82B0CE]"
+                      isSeashell ? "bg-[#FFF3DB] border-[#F3DECB] text-[#7E6857]" : "bg-[#15110E] border-[#2E241D] text-[#FFEABD]"
                     }`}>
                       <tr>
                         <th className="p-2.5">Timestamp</th>
@@ -1596,13 +1730,13 @@ export default function AegisxDashboard() {
                         <th className="p-2.5">Status</th>
                       </tr>
                     </thead>
-                    <tbody className={`divide-y ${isSeashell ? "divide-[#E5D2C5]" : "divide-[#1E2D48]/60"}`}>
+                    <tbody className={`divide-y ${isSeashell ? "divide-[#F3DECB]" : "divide-[#2E241D]/60"}`}>
                       {auditLogs.map((log) => (
-                        <tr key={log.id} className={`transition ${isSeashell ? "hover:bg-[#FAF0EA]" : "hover:bg-[#17243C]"}`}>
+                        <tr key={log.id} className={`transition ${isSeashell ? "hover:bg-[#FFFDF8]" : "hover:bg-[#261F1A]"}`}>
                           <td className="p-2.5 text-slate-400">{log.timestamp}</td>
-                          <td className="p-2.5 text-[#E19AA6] font-semibold">{log.actor}</td>
+                          <td className="p-2.5 text-[#EB9F6E] font-semibold">{log.actor}</td>
                           <td className="p-2.5 font-bold">{log.action}</td>
-                          <td className="p-2.5 text-[#82B0CE]">{log.resource_id}</td>
+                          <td className="p-2.5 text-[#FFEABD]">{log.resource_id}</td>
                           <td className="p-2.5 text-[#6AC99F]">{log.status}</td>
                         </tr>
                       ))}
@@ -1614,13 +1748,169 @@ export default function AegisxDashboard() {
           )}
 
         </div>
+              {/* Human Analyst Desk & Shift Handover Slide-Over */}
+        {isAnalystDeskOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm animate-in fade-in">
+            <div className={`w-full max-w-xl h-full border-l p-6 flex flex-col justify-between overflow-y-auto shadow-2xl transition-all ${
+              isSeashell ? "bg-[#FFFDF8] border-[#F3DECB] text-[#241912]" : "bg-[#15110E] border-[#2E241D] text-[#FFFDF8]"
+            }`}>
+              <div>
+                {/* Header */}
+                <div className="flex items-center justify-between pb-4 border-b border-inherit">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-[#EB9F6E]/20 border border-[#EB9F6E] flex items-center justify-center glow-orange">
+                      <Coffee className="w-5 h-5 text-[#EB9F6E]" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-extrabold flex items-center gap-2">
+                        <span>Human SOC Shift Desk</span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#EB9F6E] text-[#0E0C0A] font-bold">
+                          SHIFT ALPHA
+                        </span>
+                      </h2>
+                      <p className={`text-xs ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
+                        Human-in-the-Loop Handover Notes, Heuristic Gut-Checks & Operator Log
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsAnalystDeskOpen(false)}
+                    className="p-2 rounded-xl border border-inherit hover:bg-[#EB9F6E]/20 text-[#EB9F6E] transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Human Operator Badge & Shift Status */}
+                <div className={`mt-4 p-4 rounded-2xl border ${
+                  isSeashell ? "bg-[#FFF3DB] border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
+                }`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-mono font-bold uppercase text-[#EB9F6E] flex items-center gap-1.5">
+                      <Fingerprint className="w-4 h-4" /> Operator Signature
+                    </span>
+                    <span className="text-[11px] font-mono text-[#6AC99F] font-bold">
+                      ● Active Clearance: L4
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {(["Ajin", "Sarah", "Marcus"] as const).map((op) => (
+                      <button
+                        key={op}
+                        onClick={() => setActiveOperator(op)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                          activeOperator === op
+                            ? "bg-[#EB9F6E] text-[#0E0C0A] shadow-md glow-orange"
+                            : isSeashell
+                              ? "bg-white border border-[#F3DECB] text-[#5E4A3E]"
+                              : "bg-[#0E0C0A] border border-[#2E241D] text-slate-300"
+                        }`}
+                      >
+                        <User className="w-3.5 h-3.5" />
+                        <span>{op === "Ajin" ? "Ajin K. (Lead)" : op === "Sarah" ? "Sarah Chen" : "Marcus Vance"}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Add New Analyst Note / Gut-Check */}
+                <div className={`mt-4 p-4 rounded-2xl border ${
+                  isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
+                }`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold flex items-center gap-1.5">
+                      <PenTool className="w-3.5 h-3.5 text-[#EB9F6E]" />
+                      Record Human Ground Truth / Shift Note
+                    </span>
+                    <select
+                      value={newOperatorTag}
+                      onChange={(e) => setNewOperatorTag(e.target.value)}
+                      className={`text-[10px] font-mono font-bold px-2 py-1 rounded-lg border bg-transparent ${
+                        isSeashell ? "border-[#F3DECB] text-[#241912]" : "border-[#2E241D] text-[#FFEABD]"
+                      }`}
+                    >
+                      <option value="VERIFIED GROUND TRUTH">VERIFIED GROUND TRUTH</option>
+                      <option value="DUAL-CONTROL SIGNED">DUAL-CONTROL SIGNED</option>
+                      <option value="THRESHOLD CALIBRATED">THRESHOLD CALIBRATED</option>
+                      <option value="FALSE POSITIVE SUPPRESSED">FALSE POSITIVE SUPPRESSED</option>
+                      <option value="RAG KNOWLEDGE LINKED">RAG KNOWLEDGE LINKED</option>
+                    </select>
+                  </div>
+                  <textarea
+                    rows={3}
+                    value={newOperatorNoteText}
+                    onChange={(e) => setNewOperatorNoteText(e.target.value)}
+                    placeholder="Jot down human heuristic assessment, anomaly confirmation, or shift handover instructions..."
+                    className={`w-full p-3 rounded-xl border text-xs outline-none transition resize-none ${
+                      isSeashell
+                        ? "bg-[#FFFDF8] border-[#F3DECB] text-[#241912] focus:border-[#EB9F6E]"
+                        : "bg-[#0E0C0A] border-[#2E241D] text-[#FFFDF8] focus:border-[#EB9F6E]"
+                    }`}
+                  />
+                  <div className="mt-2.5 flex justify-end">
+                    <button
+                      onClick={handleAddOperatorNote}
+                      className="px-4 py-2 rounded-xl bg-[#EB9F6E] hover:bg-[#F2AF83] text-[#0E0C0A] font-bold text-xs flex items-center gap-1.5 transition glow-orange"
+                    >
+                      <FileCheck className="w-3.5 h-3.5" />
+                      Pin to Shift Handover Board
+                    </button>
+                  </div>
+                </div>
+
+                {/* Handover Log Stream */}
+                <div className="mt-5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#EB9F6E]">
+                      Live Shift Handover Feed ({operatorNotes.length} Entries)
+                    </span>
+                    <span className="text-[10px] font-mono text-[#6AC99F]">
+                      100% Human Signed
+                    </span>
+                  </div>
+                  {operatorNotes.map((note) => (
+                    <div
+                      key={note.id}
+                      className={`p-3.5 rounded-2xl border transition ${
+                        isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-[#EB9F6E]">{note.author}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">({note.role})</span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-mono">{note.time}</span>
+                      </div>
+                      <p className="text-xs leading-relaxed mb-2">{note.content}</p>
+                      <div className="flex items-center justify-between text-[10px] font-mono">
+                        <span className="px-2 py-0.5 rounded-full font-bold bg-[#EB9F6E]/15 text-[#EB9F6E] border border-[#EB9F6E]/30">
+                          {note.tag}
+                        </span>
+                        <span className="text-[#6AC99F] font-bold">
+                          ✓ {note.intuition}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-inherit text-center">
+                <span className="text-[11px] font-mono text-[#7E6857]">
+                  AEGIS-X SOC • Human Autonomous Defense Mesh • Operated by AjinLabs
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* 3. EXPLAINABLE AI (XAI) SHAP WATERFALL MODAL */}
       {selectedExplainEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in">
           <div className={`w-full max-w-2xl rounded-2xl border p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto ${
-            isSeashell ? "bg-[#FAF0EA] border-[#E5D2C5] text-[#141C2B]" : "bg-[#0E1524] border-[#1E2D48] text-[#FAF0EA]"
+            isSeashell ? "bg-[#FFFDF8] border-[#F3DECB] text-[#241912]" : "bg-[#15110E] border-[#2E241D] text-[#FFFDF8]"
           }`}>
             <button
               onClick={() => { setSelectedExplainEvent(null); setExplanationData(null); }}
@@ -1631,30 +1921,30 @@ export default function AegisxDashboard() {
 
             <div className="border-b pb-3">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase bg-[#E19AA6]/20 text-[#E19AA6] border border-[#E19AA6]/40">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase bg-[#EB9F6E]/20 text-[#EB9F6E] border border-[#EB9F6E]/40">
                   EXPLAINABLE AI DECOMPOSITION
                 </span>
-                <span className="text-xs font-mono text-[#82B0CE]">{selectedExplainEvent.id}</span>
+                <span className="text-xs font-mono text-[#FFEABD]">{selectedExplainEvent.id}</span>
               </div>
               <h2 className="text-base font-bold">Why the Model Flagged this Activity (SHAP Breakdown)</h2>
-              <p className={`text-xs mt-0.5 ${isSeashell ? "text-[#6B7B94]" : "text-[#82B0CE]"}`}>
+              <p className={`text-xs mt-0.5 ${isSeashell ? "text-[#7E6857]" : "text-[#FFEABD]"}`}>
                 Decomposition of individual feature risk contributions against learned normal baseline.
               </p>
             </div>
 
             {explainingLoading ? (
-              <div className="py-12 text-center text-xs font-mono text-[#82B0CE] flex items-center justify-center gap-2">
-                <RefreshCw className="w-4 h-4 animate-spin text-[#E19AA6]" /> Calculating Bayesian feature contributions...
+              <div className="py-12 text-center text-xs font-mono text-[#FFEABD] flex items-center justify-center gap-2">
+                <RefreshCw className="w-4 h-4 animate-spin text-[#EB9F6E]" /> Calculating Bayesian feature contributions...
               </div>
             ) : explanationData ? (
               <div className="space-y-4">
                 {/* Score & Confidence Header */}
                 <div className={`p-4 rounded-xl border flex items-center justify-between ${
-                  isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"
+                  isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
                 }`}>
                   <div>
                     <div className="text-[10px] font-mono text-slate-400">COMPOSITE RISK SCORE</div>
-                    <div className="text-xl font-black font-mono text-[#E19AA6]">
+                    <div className="text-xl font-black font-mono text-[#EB9F6E]">
                       {(explanationData.composite_score * 100).toFixed(1)} / 100
                     </div>
                   </div>
@@ -1666,7 +1956,7 @@ export default function AegisxDashboard() {
                   </div>
                   <div>
                     <div className="text-[10px] font-mono text-slate-400">DETECTION VERDICT</div>
-                    <div className="text-xs font-bold font-mono text-[#E19AA6] uppercase">
+                    <div className="text-xs font-bold font-mono text-[#EB9F6E] uppercase">
                       {explanationData.is_anomaly ? "Anomalous Intrusion" : "Benign Baseline"}
                     </div>
                   </div>
@@ -1680,18 +1970,18 @@ export default function AegisxDashboard() {
                       const isRisk = fc.direction === "risk_increase";
                       return (
                         <div key={i} className={`p-3 rounded-xl border text-xs ${
-                          isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#090E17] border-[#1E2D48]"
+                          isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#0E0C0A] border-[#2E241D]"
                         }`}>
                           <div className="flex items-center justify-between font-bold mb-1">
                             <span className="flex items-center gap-1.5">
-                              <span className={`w-2 h-2 rounded-full ${isRisk ? "bg-[#E19AA6]" : "bg-[#82B0CE]"}`} />
+                              <span className={`w-2 h-2 rounded-full ${isRisk ? "bg-[#EB9F6E]" : "bg-[#FFEABD]"}`} />
                               {fc.feature_name}
                             </span>
-                            <span className={`font-mono font-bold ${isRisk ? "text-[#E19AA6]" : "text-[#82B0CE]"}`}>
+                            <span className={`font-mono font-bold ${isRisk ? "text-[#EB9F6E]" : "text-[#FFEABD]"}`}>
                               {fc.impact_percentage}
                             </span>
                           </div>
-                          <p className={`text-[11px] leading-relaxed ${isSeashell ? "text-[#4B5A70]" : "text-slate-300"}`}>
+                          <p className={`text-[11px] leading-relaxed ${isSeashell ? "text-[#5E4A3E]" : "text-slate-300"}`}>
                             {fc.human_explanation}
                           </p>
                         </div>
@@ -1702,7 +1992,7 @@ export default function AegisxDashboard() {
 
                 {/* Human Feedback Action Inside Modal */}
                 <div className={`p-4 rounded-xl border flex items-center justify-between ${
-                  isSeashell ? "bg-white border-[#E5D2C5]" : "bg-[#121C2F] border-[#1E2D48]"
+                  isSeashell ? "bg-white border-[#F3DECB]" : "bg-[#1C1713] border-[#2E241D]"
                 }`}>
                   <div>
                     <div className="text-xs font-bold">Provide Human Feedback on this Prediction</div>
@@ -1714,7 +2004,7 @@ export default function AegisxDashboard() {
                         handleHumanFeedback("event", selectedExplainEvent.id, "confirmed_threat");
                         setSelectedExplainEvent(null);
                       }}
-                      className="px-3 py-1.5 rounded-lg bg-[#E19AA6] hover:bg-[#F0B0BB] text-[#090E17] font-bold text-xs flex items-center gap-1 transition"
+                      className="px-3 py-1.5 rounded-lg bg-[#EB9F6E] hover:bg-[#F2AF83] text-[#0E0C0A] font-bold text-xs flex items-center gap-1 transition"
                     >
                       <ThumbsUp className="w-3.5 h-3.5" /> Confirm Threat
                     </button>
@@ -1723,7 +2013,7 @@ export default function AegisxDashboard() {
                         handleHumanFeedback("event", selectedExplainEvent.id, "false_positive");
                         setSelectedExplainEvent(null);
                       }}
-                      className="px-3 py-1.5 rounded-lg bg-[#82B0CE] hover:bg-[#9AC2DC] text-[#090E17] font-bold text-xs flex items-center gap-1 transition"
+                      className="px-3 py-1.5 rounded-lg bg-[#FFEABD] hover:bg-[#F2AF83] text-[#0E0C0A] font-bold text-xs flex items-center gap-1 transition"
                     >
                       <ThumbsDown className="w-3.5 h-3.5" /> Flag False Positive
                     </button>
