@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+:root {
+  /* AEGISX Curated Palette: Old Rose, Seashell, Sky Blue */
+  --rose: #E19AA6;
+  --rose-hover: #F0B0BB;
+  --rose-muted: #59353D;
+  --seashell: #FAF0EA;
+  --sky: #82B0CE;
+  --sky-hover: #9AC2DC;
+  --sky-muted: #244158;
+
+  /* Cyber Rose Dark Theme (Default) */
+  --background: #090E17;
+  --foreground: #FAF0EA;
+  --sidebar: #0E1524;
+  --card: #121C2F;
+  --card-border: #1E2D48;
+  --card-hover: #17243C;
+  --primary: #E19AA6;
+  --primary-hover: #F0B0BB;
+  --success: #6AC99F;
+  --warning: #F5B942;
+  --critical: #E19AA6;
+  --muted: #94A3B8;
+}
+
+[data-theme="seashell"] {
+  --background: #FAF0EA;
+  --foreground: #141C2B;
+  --sidebar: #F2E3DA;
+  --card: #FFFFFF;
+  --card-border: #E5D2C5;
+  --card-hover: #F8EFE9;
+  --primary: #D67786;
+  --primary-hover: #BF6271;
+  --success: #2E9B68;
+  --warning: #C28612;
+  --critical: #D65264;
+  --muted: #6B7B94;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Custom Cyber Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rose);
+}
+
+/* Monospace cyber font helper */
+.font-mono-cyber {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Glowing accents with the requested palette */
+.glow-rose {
+  box-shadow: 0 0 16px rgba(225, 154, 166, 0.35);
+}
+.glow-sky {
+  box-shadow: 0 0 16px rgba(130, 176, 206, 0.35);
+}
+.glow-seashell {
+  box-shadow: 0 0 16px rgba(250, 240, 234, 0.2);
+}
+.glow-success {
+  box-shadow: 0 0 15px rgba(106, 201, 159, 0.3);
+}

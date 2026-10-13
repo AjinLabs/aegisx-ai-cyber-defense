@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+apps/web/node_modules/
+.pnp
+.pnp.*
+
+# Next.js & Build outputs
+.next/
+apps/web/.next/
+out/
+build/
+dist/
+
+# Python
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*/*/*/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Databases & local caches
+*.db-wal
+*.db-shm
+*.log
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+.vercel

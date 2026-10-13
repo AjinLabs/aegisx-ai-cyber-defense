@@ -1,0 +1,12 @@
+{
+  "name": "aegisx-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AEGISX: Enterprise Agentic AI Cyber Defense, Threat Intelligence & Human-in-the-Loop Operations Platform",
+  "scripts": {
+    "dev": "npm --prefix apps/web run dev",
+    "build": "npm --prefix apps/web run build",
+    "start": "npm --prefix apps/web run start",
+    "lint": "npm --prefix apps/web run lint"
+  }
+}
