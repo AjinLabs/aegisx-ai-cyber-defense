@@ -131,11 +131,22 @@ SCENARIOS = {
     }
 }
 
+SCENARIO_ALIASES = {
+    "brute_force_attack": "brute_force_lateral",
+    "brute_force": "brute_force_lateral",
+    "c2": "c2_exfiltration",
+    "c2_beacon": "c2_exfiltration",
+    "normal": "normal_baseline",
+    "baseline": "normal_baseline",
+}
+
 def inject_scenario(scenario_key: str) -> list[dict]:
     """Inject pre-built scenario events into pipeline."""
-    scenario = SCENARIOS.get(scenario_key)
+    normalized_key = SCENARIO_ALIASES.get(scenario_key, scenario_key)
+    scenario = SCENARIOS.get(normalized_key)
     if not scenario:
-        raise ValueError(f"Unknown scenario: {scenario_key}")
+        valid_keys = list(SCENARIOS.keys())
+        raise ValueError(f"Unknown scenario: {scenario_key}. Valid options: {valid_keys}")
         
     results = []
     base_time = datetime.now(timezone.utc) - timedelta(minutes=len(scenario["events"]))

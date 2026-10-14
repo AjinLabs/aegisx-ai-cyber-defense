@@ -173,6 +173,15 @@ export default function AegisxDashboard() {
     setTimeout(() => setNotification(null), 4000);
   };
 
+  const loadIncidentDetails = async (id: string) => {
+    try {
+      const data = await api.fetchIncidentDetail(id);
+      setSelectedIncident(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // Initial Load
   const refreshAllData = async () => {
     try {
@@ -217,15 +226,6 @@ export default function AegisxDashboard() {
   useEffect(() => {
     refreshAllData();
   }, []);
-
-  const loadIncidentDetails = async (id: string) => {
-    try {
-      const data = await api.fetchIncidentDetail(id);
-      setSelectedIncident(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const handleSimulateScenario = async (key: string) => {
     setIsSimulating(true);

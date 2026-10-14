@@ -67,7 +67,10 @@ Unlike black-box AI tools that output arbitrary numbers or claim autonomous supe
 ### 1. Backend API (FastAPI, Scikit-learn, PyTorch, SQLite WAL)
 
 ```bash
-# From workspace root
+# Install Python backend dependencies
+pip install -r requirements.txt
+
+# Start backend server from workspace root
 python -m uvicorn apps.api.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
@@ -79,21 +82,27 @@ The API initializes SQLite with WAL mode, seeds initial detection rules, threat 
 ### 2. Frontend Interface (Next.js 16, React 19, Tailwind CSS, React Flow)
 
 ```bash
-# Navigate to web app
+# From workspace root
+npm run dev
+
+# Or navigate to web app
 cd apps/web
 npm.cmd run dev
 ```
 
 Open `http://localhost:3000` to access the AEGISX Security Command Centre.
 
-### 3. Running Automated Tests
+### 3. Running Automated Tests & Quality Checks
 
 ```bash
-# Run full Pytest suite
-python -m pytest tests/test_aegisx.py -v
+# Run full Pytest test suite (all 10 tests)
+pytest -v
+
+# Run frontend linting & validation
+npm run lint
 ```
 
-All 8 comprehensive tests verify:
+All 10 comprehensive tests verify:
 - APT29 IOC Threat Intel Matching
 - 5-Layer Detection Pipeline (Rules + Stats + ML + DL + Layer E Fusion)
 - RAG Semantic Cosine & Keyword Hybrid Search
@@ -102,6 +111,8 @@ All 8 comprehensive tests verify:
 - Sandbox Defensive Action Simulation
 - Explainable AI Feature Attribution Decomposition
 - Human Active Learning Retraining & Sensitivity Curves
+- Attack Scenario Ingestion & Alias Pipelines
+- FastAPI Service Health & Observability Metrics
 
 ---
 

@@ -127,3 +127,29 @@ def test_human_active_learning_and_sensitivity_curve():
     assert metrics["analyst_agreement_rate"] >= 0.90
     assert "v1.4.2" in metrics["model_version"]
 
+def test_attack_scenario_injection():
+    from apps.api.services.ingestion import inject_scenario
+    # Test valid scenario injection
+    results = inject_scenario("brute_force_lateral")
+    assert len(results) == 5
+    assert any(r["alert"] is not None for r in results)
+    # Test alias resolution
+    alias_results = inject_scenario("brute_force_attack")
+    assert len(alias_results) == 5
+
+def test_api_health_and_observability():
+    from fastapi.testclient import TestClient
+    from apps.api.main import app
+    client = TestClient(app)
+    res = client.get("/health")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "healthy"
+    assert "sqlite_wal_database" in data["services"]
+    
+    metrics_res = client.get("/api/v1/observability/metrics")
+    assert metrics_res.status_code == 200
+    metrics_data = metrics_res.json()
+    assert "total_events" in metrics_data
+
+
